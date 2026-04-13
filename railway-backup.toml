@@ -1,0 +1,27 @@
+[build]
+builder = "nixpacks"
+buildCommand = "npm install"
+
+[deploy]
+startCommand = "npm start"
+healthcheckPath = "/api/health"
+healthcheckTimeout = 60
+restartPolicyType = "ON_FAILURE"
+restartPolicyMaxRetries = 3
+
+[variables]
+PORT = "5000"
+NODE_ENV = "production"
+
+# Supabase Database
+DATABASE_URL = "postgresql://postgres:90gcWhs6XUJrbXMb@db.wolnyokijwtrxkyluxrj.supabase.co:5432/postgres"
+
+# Supabase API
+SUPABASE_URL = "https://wolnyokijwtrxkyluxrj.supabase.co"
+SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6IndvbG55b2tpand0cnhreWx1eHJqIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzYwODgwMTEsImV4cCI6MjA5MTY2NDAxMX0.n0HAtBGNSKuK8yV8qQ4p85JJy3UquAM-MPpfw7OK8jY"
+
+# JWT
+JWT_SECRET = "roofready-super-secret-jwt-key-change-in-production"
+
+# Frontend URL (update after deployment)
+CLIENT_URL = "https://roofready.vercel.app"

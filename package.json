@@ -6,7 +6,7 @@
   "scripts": {
     "start": "node server-prod.js",
     "dev": "nodemon server.js",
-    "prod": "node server-prod.js",
+    "build": "npm install",
     "client": "cd client && npm start",
     "install-all": "npm install && cd client && npm install"
   },
