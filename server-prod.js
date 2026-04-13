@@ -9,6 +9,16 @@ const PORT = process.env.PORT || 5000;
 // Supabase client
 const supabaseUrl = process.env.SUPABASE_URL;
 const supabaseKey = process.env.SUPABASE_ANON_KEY;
+
+console.log('Supabase URL:', supabaseUrl ? 'Set' : 'Missing');
+console.log('Supabase Key:', supabaseKey ? 'Set' : 'Missing');
+
+if (!supabaseUrl || !supabaseKey) {
+  console.error('❌ ERROR: Supabase credentials missing!');
+  console.error('Please set SUPABASE_URL and SUPABASE_ANON_KEY environment variables');
+  process.exit(1);
+}
+
 const supabase = createClient(supabaseUrl, supabaseKey);
 
 // CORS configuration
