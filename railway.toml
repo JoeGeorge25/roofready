@@ -1,0 +1,16 @@
+[build]
+builder = "nixpacks"
+buildCommand = "npm install"
+
+[deploy]
+startCommand = "node server-prod.js"
+healthcheckPath = "/api/health"
+healthcheckTimeout = 60
+
+[variables]
+PORT = "5000"
+NODE_ENV = "production"
+DATABASE_URL = "postgresql://postgres:90gcWhs6XUJrbXMb@db.wolnyokijwtrxkyluxrj.supabase.co:5432/postgres"
+SUPABASE_URL = "https://wolnyokijwtrxkyluxrj.supabase.co"
+SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6IndvbG55b2tpand0cnhreWx1eHJqIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzYwODgwMTEsImV4cCI6MjA5MTY2NDAxMX0.n0HAtBGNSKuK8yV8qQ4p85JJy3UquAM-MPpfw7OK8jY"
+JWT_SECRET = "roofready-super-secret-jwt-key-change-in-production"
