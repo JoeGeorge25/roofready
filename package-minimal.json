@@ -8,16 +8,12 @@
     "dev": "node minimal-server.js"
   },
   "dependencies": {
-    "express": "^4.22.1"
+    "express": "^4.18.2"
   },
   "engines": {
     "node": ">=16.0.0"
   },
-  "keywords": [
-    "roofing",
-    "saas",
-    "api"
-  ],
+  "keywords": ["roofing", "saas", "api"],
   "author": "RoofReady Team",
   "license": "MIT"
 }
