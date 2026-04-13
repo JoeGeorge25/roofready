@@ -1,6 +1,6 @@
 [build]
-builder = "nixpacks"
+builder = "dockerfile"
 
 [deploy]
-startCommand = "npm start"
+startCommand = "node server-prod.js"
 healthcheckPath = "/api/health"
