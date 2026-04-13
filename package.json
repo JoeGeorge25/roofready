@@ -4,8 +4,9 @@
   "description": "SaaS for roofing companies - Job readiness status system",
   "main": "server.js",
   "scripts": {
-    "start": "node server.js",
+    "start": "node server-prod.js",
     "dev": "nodemon server.js",
+    "prod": "node server-prod.js",
     "client": "cd client && npm start",
     "install-all": "npm install && cd client && npm install"
   },
