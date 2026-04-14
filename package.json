@@ -1,1 +1,23 @@
-{"name":"roofready-cors","version":"1.0.0","main":"server.js","scripts":{"start":"node server.js"},"dependencies":{}}
+{
+  "name": "roofready",
+  "version": "1.0.0",
+  "description": "RoofReady SaaS - Roofing operations platform",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js",
+    "dev": "node server.js",
+    "test-stripe": "node test-stripe.js",
+    "fulfillment": "node fulfillment-service.js",
+    "checkout": "node stripe-checkout.js"
+  },
+  "dependencies": {
+    "express": "^4.18.2",
+    "cors": "^2.8.5",
+    "dotenv": "^16.3.1",
+    "stripe": "^14.12.0",
+    "@supabase/supabase-js": "^2.39.0"
+  },
+  "engines": {
+    "node": "18.x"
+  }
+}
