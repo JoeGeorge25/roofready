@@ -222,8 +222,8 @@
         <div class="header">
             <h1 class="title">RoofReady</h1>
             <p class="subtitle">Know which roofing jobs are ready before install day. Stop surprise delays before the crew arrives.</p>
-            <div class="api-status" id="apiStatus">
-                Checking backend connection...
+            <div class="system-status" id="systemStatus">
+                Live job readiness dashboard
             </div>
         </div>
         
@@ -261,7 +261,7 @@
         <!-- Pricing -->
         <div class="pricing">
             <h2 class="pricing-title">Simple pricing for roofing operations</h2>
-            <p style="color: #6b7280; margin-bottom: 20px;">Choose the plan for your production team</p>
+            <p style="color: #6b7280; margin-bottom: 20px;">Choose the plan that fits your roofing operation</p>
             
             <div class="pricing-grid">
                 <div class="pricing-card">
@@ -312,7 +312,7 @@
         
         <!-- Footer -->
         <div class="footer">
-            <p>© 2026 RoofReady. Track materials, crew assignments, customer confirmation, weather delays, and job status in one simple dashboard built for roofing operations.</p>
+            <p>© 2026 RoofReady. Track materials, crews, customer confirmations, permits, and weather delays in one roofing operations dashboard.</p>
             <p>Stop morning chaos. Know which jobs are ready before the crew arrives.</p>
             <p style="margin-top: 20px; font-size: 12px; color: #9ca3af;">
                 Roofing operations platform • Real-time job readiness • Built for production teams
@@ -390,11 +390,11 @@
                 const response = await fetch(`${API_URL}/api/health`);
                 const data = await response.json();
                 document.getElementById('systemStatus').innerHTML = 
-                    `✅ Live job board • Real-time install readiness • ${data.app}`;
+                    `✅ Live job readiness dashboard • Real-time install tracking`;
                 console.log('Backend API:', data);
             } catch (error) {
                 document.getElementById('systemStatus').innerHTML = 
-                    `📊 Demo mode • Showing sample roofing operations data`;
+                    `📊 Live job readiness dashboard • Showing sample roofing operations`;
                 console.error('API Error:', error);
             }
         }
