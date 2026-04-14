@@ -1,0 +1,32 @@
+[build]
+builder = "nixpacks"
+buildCommand = "npm install"
+
+[deploy]
+startCommand = "node fulfillment-service.js"
+healthcheckPath = "/"
+healthcheckTimeout = 60
+
+[variables]
+PORT = "3002"
+NODE_ENV = "production"
+
+# Required - Set these in Railway Dashboard
+STRIPE_SECRET_KEY = ""
+STRIPE_WEBHOOK_SECRET = ""
+STRIPE_PRICE_STARTER = ""
+STRIPE_PRICE_PRO = ""
+STRIPE_PRICE_TEAM = ""
+APP_URL = "https://roofready-seven.vercel.app"
+SUPABASE_URL = "https://wolnyokijwtrxkyluxrj.supabase.co"
+SUPABASE_ANON_KEY = ""
+
+[observability]
+logs = true
+metrics = true
+
+[scale]
+min = 1
+max = 3
+memory = 512
+cpu = 0.5
