@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>RoofReady | Know which roofing jobs are ready before install day</title>
+    <title>RoofReady | Simple job readiness for roofing companies</title>
     <style>
         * {
             margin: 0;
@@ -22,6 +22,29 @@
             max-width: 1200px;
             margin: 0 auto;
             padding: 20px;
+        }
+        
+        /* Mobile responsiveness */
+        @media (max-width: 768px) {
+            .container {
+                padding: 12px;
+            }
+            .header, .job-board, .pricing {
+                padding: 16px;
+            }
+            .title {
+                font-size: 24px;
+            }
+            .subtitle {
+                font-size: 14px;
+            }
+            table {
+                display: block;
+                overflow-x: auto;
+            }
+            .pricing-grid {
+                grid-template-columns: 1fr;
+            }
         }
         
         .header {
@@ -222,13 +245,13 @@
         <!-- Header -->
         <div class="header">
             <h1 class="title">RoofReady</h1>
-            <p class="subtitle">Know which roofing jobs are ready before install day. Stop surprise delays before the crew arrives.</p>
+            <p class="subtitle">A simple, mobile‑first app for roofing companies to track job readiness. Know which jobs are ready, blocked, or at risk before install day.</p>
             <div class="system-status" id="systemStatus">
-                Live job readiness dashboard • Real-time install tracking
+                Live job board • Office and field in sync
             </div>
             <div style="margin-top: 16px; padding: 12px; background-color: #f0f9ff; border-radius: 6px; border-left: 4px solid #0ea5e9;">
                 <p style="margin: 0; font-size: 14px; color: #0369a1; font-weight: 500;">
-                    See tomorrow's install risks before they cost you time and money.
+                    Replace spreadsheets, sticky notes, and group chats with one clear view of job readiness.
                 </p>
             </div>
         </div>
@@ -264,10 +287,78 @@
             </div>
         </div>
         
+        <!-- Field & Office Sync -->
+        <div class="pricing" style="margin-top: 40px;">
+            <h2 class="pricing-title">Office and field in sync</h2>
+            <p style="color: #6b7280; margin-bottom: 20px;">Built for roofing operations teams</p>
+            
+            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 20px; margin-top: 20px;">
+                <div style="background: white; border-radius: 8px; padding: 24px; border: 1px solid #e5e7eb;">
+                    <div style="display: flex; align-items: center; margin-bottom: 16px;">
+                        <div style="width: 40px; height: 40px; background-color: #dbeafe; border-radius: 8px; display: flex; align-items: center; justify-content: center; margin-right: 12px;">
+                            <span style="font-size: 20px;">🏢</span>
+                        </div>
+                        <div>
+                            <h3 style="font-size: 18px; font-weight: 600; margin: 0;">Office Staff</h3>
+                            <p style="font-size: 14px; color: #6b7280; margin: 4px 0 0 0;">Track materials, crews, weather, permits</p>
+                        </div>
+                    </div>
+                    <ul style="list-style: none; padding: 0; margin: 0;">
+                        <li style="padding: 8px 0; border-bottom: 1px solid #f3f4f6; display: flex; align-items: center;">
+                            <span style="color: #10b981; margin-right: 8px;">✓</span>
+                            Track material orders and deliveries
+                        </li>
+                        <li style="padding: 8px 0; border-bottom: 1px solid #f3f4f6; display: flex; align-items: center;">
+                            <span style="color: #10b981; margin-right: 8px;">✓</span>
+                            Assign crews and manage schedules
+                        </li>
+                        <li style="padding: 8px 0; border-bottom: 1px solid #f3f4f6; display: flex; align-items: center;">
+                            <span style="color: #10b981; margin-right: 8px;">✓</span>
+                            Flag weather delays and permit issues
+                        </li>
+                        <li style="padding: 8px 0; display: flex; align-items: center;">
+                            <span style="color: #10b981; margin-right: 8px;">✓</span>
+                            Confirm homeowners before install day
+                        </li>
+                    </ul>
+                </div>
+                
+                <div style="background: white; border-radius: 8px; padding: 24px; border: 1px solid #e5e7eb;">
+                    <div style="display: flex; align-items: center; margin-bottom: 16px;">
+                        <div style="width: 40px; height: 40px; background-color: #dcfce7; border-radius: 8px; display: flex; align-items: center; justify-content: center; margin-right: 12px;">
+                            <span style="font-size: 20px;">👷</span>
+                        </div>
+                        <div>
+                            <h3 style="font-size: 18px; font-weight: 600; margin: 0;">Field Crews</h3>
+                            <p style="font-size: 14px; color: #6b7280; margin: 4px 0 0 0;">Update status, add photos, log delays</p>
+                        </div>
+                    </div>
+                    <ul style="list-style: none; padding: 0; margin: 0;">
+                        <li style="padding: 8px 0; border-bottom: 1px solid #f3f4f6; display: flex; align-items: center;">
+                            <span style="color: #10b981; margin-right: 8px;">✓</span>
+                            Update job status from the field
+                        </li>
+                        <li style="padding: 8px 0; border-bottom: 1px solid #f3f4f6; display: flex; align-items: center;">
+                            <span style="color: #10b981; margin-right: 8px;">✓</span>
+                            Add photos and completion documentation
+                        </li>
+                        <li style="padding: 8px 0; border-bottom: 1px solid #f3f4f6; display: flex; align-items: center;">
+                            <span style="color: #10b981; margin-right: 8px;">✓</span>
+                            Log delays and on-site issues
+                        </li>
+                        <li style="padding: 8px 0; display: flex; align-items: center;">
+                            <span style="color: #10b981; margin-right: 8px;">✓</span>
+                            Sync with office without calls or texts
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+
         <!-- Pricing -->
-        <div class="pricing">
-            <h2 class="pricing-title">Simple pricing for roofing operations</h2>
-            <p style="color: #6b7280; margin-bottom: 20px;">Choose the plan that fits your roofing operation</p>
+        <div class="pricing" style="margin-top: 40px;">
+            <h2 class="pricing-title">Simple pricing, no complexity</h2>
+            <p style="color: #6b7280; margin-bottom: 20px;">Designed for roofing companies who need better workflow control without full‑suite CRM cost</p>
             
             <div class="pricing-grid">
                 <div class="pricing-card">
@@ -318,10 +409,10 @@
         
         <!-- Footer -->
         <div class="footer">
-            <p>© 2026 RoofReady. Track materials, crews, customer confirmations, permits, and weather delays in one roofing operations dashboard.</p>
-            <p>Stop morning chaos. Know which jobs are ready before the crew arrives.</p>
+            <p>© 2026 RoofReady. A simple, mobile‑first app built for roofing companies that want to know exactly which jobs are ready to install.</p>
+            <p>The goal is simple: less stress on install day, fewer surprise delays, and more predictable production.</p>
             <p style="margin-top: 20px; font-size: 12px; color: #9ca3af;">
-                Roofing operations platform • Real-time job readiness • Built for production teams
+                Replace spreadsheets, sticky notes, and group chats • Office and field in sync • Built for roofing operations
             </p>
         </div>
     </div>
