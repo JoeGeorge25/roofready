@@ -79,8 +79,9 @@
         }
         
         td {
-            padding: 20px 16px;
+            padding: 24px 16px;
             border-bottom: 1px solid #e5e7eb;
+            vertical-align: top;
         }
         
         .status-badge {
@@ -223,7 +224,12 @@
             <h1 class="title">RoofReady</h1>
             <p class="subtitle">Know which roofing jobs are ready before install day. Stop surprise delays before the crew arrives.</p>
             <div class="system-status" id="systemStatus">
-                Live job readiness dashboard
+                Live job readiness dashboard • Real-time install tracking
+            </div>
+            <div style="margin-top: 16px; padding: 12px; background-color: #f0f9ff; border-radius: 6px; border-left: 4px solid #0ea5e9;">
+                <p style="margin: 0; font-size: 14px; color: #0369a1; font-weight: 500;">
+                    See tomorrow's install risks before they cost you time and money.
+                </p>
             </div>
         </div>
         
@@ -252,7 +258,7 @@
                         </p>
                     </div>
                     <button class="add-button" onclick="addNewJob()">
-                        + Add New Job
+                        + Schedule New Job
                     </button>
                 </div>
             </div>
@@ -275,7 +281,7 @@
                         <li>Email support</li>
                         <li>Mobile dashboard</li>
                     </ul>
-                    <button class="plan-button primary" onclick="selectPlan('Starter')">Get Started</button>
+                    <button class="plan-button primary" onclick="selectPlan('Starter')">Book Demo</button>
                 </div>
                 
                 <div class="pricing-card pro">
@@ -290,7 +296,7 @@
                         <li>Custom reporting</li>
                         <li>Weather delay alerts</li>
                     </ul>
-                    <button class="plan-button primary" onclick="selectPlan('Pro')">Get Started</button>
+                    <button class="plan-button primary" onclick="selectPlan('Pro')">Book Demo</button>
                 </div>
                 
                 <div class="pricing-card">
@@ -305,7 +311,7 @@
                         <li>Dedicated operations support</li>
                         <li>Advanced scheduling tools</li>
                     </ul>
-                    <button class="plan-button primary" onclick="selectPlan('Team')">Get Started</button>
+                    <button class="plan-button primary" onclick="selectPlan('Team')">Book Demo</button>
                 </div>
             </div>
         </div>
@@ -470,7 +476,7 @@
             renderJobs();
             
             // Show notification
-            alert('New roofing job added! Track materials, crew, and customer confirmation to ensure install readiness.');
+            alert('New roofing job scheduled! Track materials, crew assignment, and customer confirmation to ensure install readiness.');
         }
         
         // Select pricing plan
