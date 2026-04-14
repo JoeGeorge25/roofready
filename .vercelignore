@@ -1,4 +1,5 @@
-# Ignore everything except client folder
+# Ignore everything except index.html and vercel.json
 *
+!index.html
+!vercel.json
 !client/
-!client/**

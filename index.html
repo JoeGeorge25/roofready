@@ -1,0 +1,416 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>RoofReady SaaS - Job Readiness System</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, sans-serif;
+        }
+        
+        body {
+            background-color: #f9fafb;
+            color: #111827;
+            line-height: 1.5;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        
+        .header {
+            background: white;
+            padding: 24px;
+            border-radius: 12px;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+            margin-bottom: 24px;
+        }
+        
+        .title {
+            font-size: 28px;
+            font-weight: bold;
+            color: #111827;
+            margin-bottom: 8px;
+        }
+        
+        .subtitle {
+            font-size: 16px;
+            color: #6b7280;
+            margin-bottom: 16px;
+        }
+        
+        .api-status {
+            background-color: #eff6ff;
+            color: #3b82f6;
+            padding: 12px;
+            border-radius: 6px;
+            font-size: 14px;
+            margin-top: 12px;
+        }
+        
+        .job-board {
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+            overflow: hidden;
+        }
+        
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+        
+        th {
+            background-color: #f9fafb;
+            padding: 16px;
+            text-align: left;
+            font-size: 12px;
+            font-weight: 600;
+            color: #6b7280;
+            text-transform: uppercase;
+            border-bottom: 1px solid #e5e7eb;
+        }
+        
+        td {
+            padding: 20px 16px;
+            border-bottom: 1px solid #e5e7eb;
+        }
+        
+        .status-badge {
+            padding: 6px 12px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 600;
+            display: inline-block;
+        }
+        
+        .status-ready {
+            background-color: #d1fae5;
+            color: #065f46;
+        }
+        
+        .status-at-risk {
+            background-color: #fef3c7;
+            color: #92400e;
+        }
+        
+        .status-blocked {
+            background-color: #fee2e2;
+            color: #991b1b;
+        }
+        
+        .status-completed {
+            background-color: #dbeafe;
+            color: #1e40af;
+        }
+        
+        .add-button {
+            background-color: #3b82f6;
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: 500;
+            font-size: 14px;
+            transition: background-color 0.2s;
+        }
+        
+        .add-button:hover {
+            background-color: #2563eb;
+        }
+        
+        .footer {
+            margin-top: 40px;
+            text-align: center;
+            color: #6b7280;
+            font-size: 14px;
+            padding: 20px;
+        }
+        
+        .pricing {
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+            padding: 24px;
+            margin-top: 24px;
+        }
+        
+        .pricing-title {
+            font-size: 20px;
+            font-weight: 600;
+            margin-bottom: 16px;
+            color: #111827;
+        }
+        
+        .pricing-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+            margin-top: 20px;
+        }
+        
+        .pricing-card {
+            border: 1px solid #e5e7eb;
+            border-radius: 8px;
+            padding: 24px;
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+        
+        .pricing-card:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+        }
+        
+        .pricing-card.pro {
+            border-color: #3b82f6;
+            background-color: #eff6ff;
+        }
+        
+        .plan-name {
+            font-size: 18px;
+            font-weight: 600;
+            margin-bottom: 8px;
+        }
+        
+        .plan-price {
+            font-size: 32px;
+            font-weight: bold;
+            margin-bottom: 16px;
+        }
+        
+        .plan-features {
+            list-style: none;
+            margin-bottom: 24px;
+        }
+        
+        .plan-features li {
+            padding: 8px 0;
+            border-bottom: 1px solid #f3f4f6;
+        }
+        
+        .plan-button {
+            width: 100%;
+            padding: 12px;
+            border-radius: 6px;
+            border: none;
+            font-weight: 500;
+            cursor: pointer;
+            transition: background-color 0.2s;
+        }
+        
+        .plan-button.primary {
+            background-color: #3b82f6;
+            color: white;
+        }
+        
+        .plan-button.primary:hover {
+            background-color: #2563eb;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- Header -->
+        <div class="header">
+            <h1 class="title">RoofReady SaaS</h1>
+            <p class="subtitle">Job Readiness System for Roofing Companies - Clear status before install day</p>
+            <div class="api-status" id="apiStatus">
+                Checking backend connection...
+            </div>
+        </div>
+        
+        <!-- Job Board -->
+        <div class="job-board">
+            <table>
+                <thead>
+                    <tr>
+                        <th>Address</th>
+                        <th>Customer</th>
+                        <th>Status</th>
+                        <th>Install Date</th>
+                    </tr>
+                </thead>
+                <tbody id="jobsTable">
+                    <!-- Jobs will be loaded here -->
+                </tbody>
+            </table>
+            
+            <div style="padding: 24px; border-top: 1px solid #e5e7eb; background-color: #f9fafb;">
+                <div style="display: flex; justify-content: space-between; align-items: center;">
+                    <div>
+                        <p style="font-size: 14px; color: #6b7280;">
+                            Showing <span id="jobCount">4</span> jobs
+                        </p>
+                    </div>
+                    <button class="add-button" onclick="addNewJob()">
+                        + Add New Job
+                    </button>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Pricing -->
+        <div class="pricing">
+            <h2 class="pricing-title">Start Generating Revenue Today</h2>
+            <p style="color: #6b7280; margin-bottom: 20px;">Choose the plan that fits your roofing business</p>
+            
+            <div class="pricing-grid">
+                <div class="pricing-card">
+                    <div class="plan-name">Starter</div>
+                    <div class="plan-price">$99<span style="font-size: 16px; color: #6b7280;">/month</span></div>
+                    <ul class="plan-features">
+                        <li>Up to 10 active jobs</li>
+                        <li>Basic job tracking</li>
+                        <li>Email support</li>
+                        <li>Mobile-friendly dashboard</li>
+                    </ul>
+                    <button class="plan-button primary" onclick="selectPlan('Starter')">Get Started</button>
+                </div>
+                
+                <div class="pricing-card pro">
+                    <div class="plan-name">Pro</div>
+                    <div class="plan-price">$199<span style="font-size: 16px; color: #6b7280;">/month</span></div>
+                    <ul class="plan-features">
+                        <li>Up to 50 active jobs</li>
+                        <li>Advanced analytics</li>
+                        <li>Priority support</li>
+                        <li>Team collaboration</li>
+                        <li>Custom reporting</li>
+                    </ul>
+                    <button class="plan-button primary" onclick="selectPlan('Pro')">Get Started</button>
+                </div>
+                
+                <div class="pricing-card">
+                    <div class="plan-name">Team</div>
+                    <div class="plan-price">$349<span style="font-size: 16px; color: #6b7280;">/month</span></div>
+                    <ul class="plan-features">
+                        <li>Unlimited jobs</li>
+                        <li>Multiple teams</li>
+                        <li>API access</li>
+                        <li>White-label option</li>
+                        <li>Dedicated account manager</li>
+                    </ul>
+                    <button class="plan-button primary" onclick="selectPlan('Team')">Get Started</button>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Footer -->
+        <div class="footer">
+            <p>© 2024 RoofReady SaaS. Job readiness system for roofing companies.</p>
+            <p>Ready to generate revenue? Start onboarding roofing companies today!</p>
+            <p style="margin-top: 20px; font-size: 12px;">
+                Backend API: <span id="backendUrl">https://roofready-production.up.railway.app</span>
+            </p>
+        </div>
+    </div>
+    
+    <script>
+        // Backend API URL
+        const API_URL = 'https://roofready-production.up.railway.app';
+        
+        // Sample jobs data
+        const jobs = [
+            { id: '1', address: '123 Main St', customerName: 'John Smith', status: 'ready', installDate: '2024-04-15' },
+            { id: '2', address: '456 Oak Ave', customerName: 'Sarah Johnson', status: 'at-risk', installDate: '2024-04-16' },
+            { id: '3', address: '789 Pine Rd', customerName: 'Mike Wilson', status: 'blocked', installDate: '2024-04-17' },
+            { id: '4', address: '321 Elm Blvd', customerName: 'Lisa Brown', status: 'completed', installDate: '2024-04-14' }
+        ];
+        
+        // Check backend connection
+        async function checkBackend() {
+            try {
+                const response = await fetch(`${API_URL}/api/health`);
+                const data = await response.json();
+                document.getElementById('apiStatus').innerHTML = 
+                    `✅ Connected to backend API: ${data.app} v${data.version}`;
+                console.log('Backend API:', data);
+            } catch (error) {
+                document.getElementById('apiStatus').innerHTML = 
+                    `❌ Cannot connect to backend API. Using demo data.`;
+                console.error('API Error:', error);
+            }
+        }
+        
+        // Render jobs table
+        function renderJobs() {
+            const tableBody = document.getElementById('jobsTable');
+            const jobCount = document.getElementById('jobCount');
+            
+            tableBody.innerHTML = '';
+            jobCount.textContent = jobs.length;
+            
+            jobs.forEach(job => {
+                const row = document.createElement('tr');
+                
+                let statusClass = '';
+                let statusText = '';
+                
+                switch(job.status) {
+                    case 'ready':
+                        statusClass = 'status-ready';
+                        statusText = 'Ready';
+                        break;
+                    case 'at-risk':
+                        statusClass = 'status-at-risk';
+                        statusText = 'At Risk';
+                        break;
+                    case 'blocked':
+                        statusClass = 'status-blocked';
+                        statusText = 'Blocked';
+                        break;
+                    case 'completed':
+                        statusClass = 'status-completed';
+                        statusText = 'Completed';
+                        break;
+                }
+                
+                row.innerHTML = `
+                    <td>${job.address}</td>
+                    <td>${job.customerName}</td>
+                    <td><span class="status-badge ${statusClass}">${statusText}</span></td>
+                    <td>${job.installDate}</td>
+                `;
+                
+                tableBody.appendChild(row);
+            });
+        }
+        
+        // Add new job
+        function addNewJob() {
+            const newJob = {
+                id: (jobs.length + 1).toString(),
+                address: 'New Address ' + (jobs.length + 1),
+                customerName: 'New Customer',
+                status: 'ready',
+                installDate: '2024-04-' + (18 + jobs.length)
+            };
+            
+            jobs.push(newJob);
+            renderJobs();
+            
+            // Show notification
+            alert('New job added! In the full version, this would save to the database.');
+        }
+        
+        // Select pricing plan
+        function selectPlan(planName) {
+            alert(`You selected the ${planName} plan! In the full version, this would redirect to Stripe checkout.`);
+        }
+        
+        // Initialize
+        document.addEventListener('DOMContentLoaded', () => {
+            checkBackend();
+            renderJobs();
+            document.getElementById('backendUrl').textContent = API_URL;
+        });
+    </script>
+</body>
+</html>
