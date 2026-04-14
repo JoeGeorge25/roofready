@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import './App.css';
 
 // Types
@@ -12,6 +12,9 @@ interface Job {
   installDate: string;
 }
 
+// Backend API URL
+const API_URL = 'https://roofready-production.up.railway.app';
+
 const App: React.FC = () => {
   const [jobs, setJobs] = useState<Job[]>([
     { id: '1', address: '123 Main St', customerName: 'John Smith', status: 'ready', installDate: '2024-04-15' },
@@ -19,6 +22,21 @@ const App: React.FC = () => {
     { id: '3', address: '789 Pine Rd', customerName: 'Mike Wilson', status: 'blocked', installDate: '2024-04-17' },
     { id: '4', address: '321 Elm Blvd', customerName: 'Lisa Brown', status: 'completed', installDate: '2024-04-14' }
   ]);
+  const [apiStatus, setApiStatus] = useState<string>('Checking...');
+  
+  // Check backend API connection
+  useEffect(() => {
+    fetch(`${API_URL}/api/health`)
+      .then(response => response.json())
+      .then(data => {
+        setApiStatus(`✅ Connected to ${API_URL}`);
+        console.log('Backend API:', data);
+      })
+      .catch(error => {
+        setApiStatus(`❌ Cannot connect to backend`);
+        console.error('API Error:', error);
+      });
+  }, []);
 
   const getStatusBadge = (status: JobStatus) => {
     switch (status) {
@@ -99,6 +117,9 @@ const App: React.FC = () => {
       <header style={styles.header}>
         <h1 style={styles.title}>RoofReady</h1>
         <p style={styles.subtitle}>Job Readiness System for Roofing Companies</p>
+        <div style={{ marginTop: '10px', fontSize: '12px', color: '#3b82f6', backgroundColor: '#eff6ff', padding: '8px', borderRadius: '4px' }}>
+          {apiStatus}
+        </div>
       </header>
 
       {/* Job Board */}
