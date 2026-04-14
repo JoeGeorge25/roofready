@@ -4,6 +4,8 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>RoofReady | Simple job readiness for roofing companies</title>
+    <!-- Stripe.js -->
+    <script src="https://js.stripe.com/v3/"></script>
     <style>
         * {
             margin: 0;
@@ -372,7 +374,7 @@
                         <li>Email support</li>
                         <li>Mobile dashboard</li>
                     </ul>
-                    <button class="plan-button primary" onclick="selectPlan('Starter')">Book Demo</button>
+                    <button class="plan-button primary" onclick="startCheckout('starter')">Get Started - $99/month</button>
                 </div>
                 
                 <div class="pricing-card pro">
@@ -387,7 +389,7 @@
                         <li>Custom reporting</li>
                         <li>Weather delay alerts</li>
                     </ul>
-                    <button class="plan-button primary" onclick="selectPlan('Pro')">Book Demo</button>
+                    <button class="plan-button primary" onclick="startCheckout('pro')">Get Started - $199/month</button>
                 </div>
                 
                 <div class="pricing-card">
@@ -402,7 +404,7 @@
                         <li>Dedicated operations support</li>
                         <li>Advanced scheduling tools</li>
                     </ul>
-                    <button class="plan-button primary" onclick="selectPlan('Team')">Book Demo</button>
+                    <button class="plan-button primary" onclick="startCheckout('team')">Get Started - $349/month</button>
                 </div>
             </div>
         </div>
@@ -581,6 +583,69 @@
             renderJobs();
             document.getElementById('backendUrl').textContent = API_URL;
         });
+        
+        // Stripe Checkout
+        const stripe = Stripe('pk_live_51STxu4F4HWFknWFw05SbItafoAKLmCAOOZLaHY3aWJuBAmHN3uo2cPMXk4AHeLCYEAIP3Oe98ZcoGtPZZRfCUkzU00cde8vOvG');
+        
+        async function startCheckout(plan) {
+            try {
+                // Show loading state
+                const button = event.target;
+                const originalText = button.textContent;
+                button.textContent = 'Processing...';
+                button.disabled = true;
+                
+                // Create checkout session
+                const response = await fetch(`${API_URL}/api/checkout/session`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        plan: plan,
+                        email: 'customer@example.com', // In real app, get from form
+                        companyName: 'New Roofing Company',
+                        fullName: 'Account Owner'
+                    })
+                });
+                
+                if (!response.ok) {
+                    throw new Error('Failed to create checkout session');
+                }
+                
+                const { sessionId } = await response.json();
+                
+                // Redirect to Stripe Checkout
+                const result = await stripe.redirectToCheckout({ sessionId });
+                
+                if (result.error) {
+                    alert('Checkout error: ' + result.error.message);
+                    button.textContent = originalText;
+                    button.disabled = false;
+                }
+            } catch (error) {
+                console.error('Checkout error:', error);
+                alert('Error starting checkout. Please try again.');
+                
+                // Fallback to direct Stripe links
+                const stripeLinks = {
+                    starter: 'https://buy.stripe.com/7sY14neeU3zv3ES0TO6g800',
+                    pro: 'https://buy.stripe.com/00w6oH8UA8TP7V81XS6g801',
+                    team: 'https://buy.stripe.com/eVq7sL1s80nj8Zc5a46g802'
+                };
+                
+                if (stripeLinks[plan]) {
+                    if (confirm('Redirecting to Stripe checkout...')) {
+                        window.location.href = stripeLinks[plan];
+                    }
+                }
+            }
+        }
+        
+        // Keep the old selectPlan function for demo purposes
+        function selectPlan(plan) {
+            alert(`Thank you for your interest in RoofReady ${plan} plan!\n\nA sales representative will contact you shortly to schedule a demo.`);
+        }
     </script>
 </body>
 </html>
