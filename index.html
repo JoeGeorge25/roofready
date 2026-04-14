@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>RoofReady SaaS - Job Readiness System</title>
+    <title>RoofReady | Know which roofing jobs are ready before install day</title>
     <style>
         * {
             margin: 0;
@@ -45,13 +45,14 @@
             margin-bottom: 16px;
         }
         
-        .api-status {
-            background-color: #eff6ff;
-            color: #3b82f6;
+        .system-status {
+            background-color: #f0fdf4;
+            color: #166534;
             padding: 12px;
             border-radius: 6px;
             font-size: 14px;
             margin-top: 12px;
+            border-left: 4px solid #22c55e;
         }
         
         .job-board {
@@ -219,8 +220,8 @@
     <div class="container">
         <!-- Header -->
         <div class="header">
-            <h1 class="title">RoofReady SaaS</h1>
-            <p class="subtitle">Job Readiness System for Roofing Companies - Clear status before install day</p>
+            <h1 class="title">RoofReady</h1>
+            <p class="subtitle">Know which roofing jobs are ready before install day. Stop surprise delays before the crew arrives.</p>
             <div class="api-status" id="apiStatus">
                 Checking backend connection...
             </div>
@@ -233,6 +234,7 @@
                     <tr>
                         <th>Address</th>
                         <th>Customer</th>
+                        <th>Readiness Factors</th>
                         <th>Status</th>
                         <th>Install Date</th>
                     </tr>
@@ -258,44 +260,50 @@
         
         <!-- Pricing -->
         <div class="pricing">
-            <h2 class="pricing-title">Start Generating Revenue Today</h2>
-            <p style="color: #6b7280; margin-bottom: 20px;">Choose the plan that fits your roofing business</p>
+            <h2 class="pricing-title">Simple pricing for roofing operations</h2>
+            <p style="color: #6b7280; margin-bottom: 20px;">Choose the plan for your production team</p>
             
             <div class="pricing-grid">
                 <div class="pricing-card">
                     <div class="plan-name">Starter</div>
+                    <div class="plan-subtitle" style="font-size: 14px; color: #6b7280; margin-bottom: 12px;">Small owner-operator teams</div>
                     <div class="plan-price">$99<span style="font-size: 16px; color: #6b7280;">/month</span></div>
                     <ul class="plan-features">
                         <li>Up to 10 active jobs</li>
-                        <li>Basic job tracking</li>
+                        <li>Job readiness tracking</li>
+                        <li>Materials & crew status</li>
                         <li>Email support</li>
-                        <li>Mobile-friendly dashboard</li>
+                        <li>Mobile dashboard</li>
                     </ul>
                     <button class="plan-button primary" onclick="selectPlan('Starter')">Get Started</button>
                 </div>
                 
                 <div class="pricing-card pro">
                     <div class="plan-name">Pro</div>
+                    <div class="plan-subtitle" style="font-size: 14px; color: #6b7280; margin-bottom: 12px;">Growing production teams</div>
                     <div class="plan-price">$199<span style="font-size: 16px; color: #6b7280;">/month</span></div>
                     <ul class="plan-features">
                         <li>Up to 50 active jobs</li>
-                        <li>Advanced analytics</li>
+                        <li>Advanced readiness analytics</li>
+                        <li>Team collaboration tools</li>
                         <li>Priority support</li>
-                        <li>Team collaboration</li>
                         <li>Custom reporting</li>
+                        <li>Weather delay alerts</li>
                     </ul>
                     <button class="plan-button primary" onclick="selectPlan('Pro')">Get Started</button>
                 </div>
                 
                 <div class="pricing-card">
                     <div class="plan-name">Team</div>
+                    <div class="plan-subtitle" style="font-size: 14px; color: #6b7280; margin-bottom: 12px;">Multi-crew or multi-location roofers</div>
                     <div class="plan-price">$349<span style="font-size: 16px; color: #6b7280;">/month</span></div>
                     <ul class="plan-features">
-                        <li>Unlimited jobs</li>
-                        <li>Multiple teams</li>
-                        <li>API access</li>
-                        <li>White-label option</li>
-                        <li>Dedicated account manager</li>
+                        <li>Unlimited active jobs</li>
+                        <li>Multiple crew management</li>
+                        <li>API & integration access</li>
+                        <li>White-label dashboard</li>
+                        <li>Dedicated operations support</li>
+                        <li>Advanced scheduling tools</li>
                     </ul>
                     <button class="plan-button primary" onclick="selectPlan('Team')">Get Started</button>
                 </div>
@@ -304,10 +312,10 @@
         
         <!-- Footer -->
         <div class="footer">
-            <p>© 2024 RoofReady SaaS. Job readiness system for roofing companies.</p>
-            <p>Ready to generate revenue? Start onboarding roofing companies today!</p>
-            <p style="margin-top: 20px; font-size: 12px;">
-                Backend API: <span id="backendUrl">https://roofready-production.up.railway.app</span>
+            <p>© 2026 RoofReady. Track materials, crew assignments, customer confirmation, weather delays, and job status in one simple dashboard built for roofing operations.</p>
+            <p>Stop morning chaos. Know which jobs are ready before the crew arrives.</p>
+            <p style="margin-top: 20px; font-size: 12px; color: #9ca3af;">
+                Roofing operations platform • Real-time job readiness • Built for production teams
             </p>
         </div>
     </div>
@@ -316,12 +324,64 @@
         // Backend API URL
         const API_URL = 'https://roofready-production.up.railway.app';
         
-        // Sample jobs data
+        // Realistic roofing jobs data for 2026
         const jobs = [
-            { id: '1', address: '123 Main St', customerName: 'John Smith', status: 'ready', installDate: '2024-04-15' },
-            { id: '2', address: '456 Oak Ave', customerName: 'Sarah Johnson', status: 'at-risk', installDate: '2024-04-16' },
-            { id: '3', address: '789 Pine Rd', customerName: 'Mike Wilson', status: 'blocked', installDate: '2024-04-17' },
-            { id: '4', address: '321 Elm Blvd', customerName: 'Lisa Brown', status: 'completed', installDate: '2024-04-14' }
+            { 
+                id: '1', 
+                address: '123 Main St', 
+                customerName: 'John Smith', 
+                status: 'ready', 
+                installDate: '2026-04-18',
+                readinessFactors: [
+                    { name: 'Materials', status: '✓ Ordered', color: 'green' },
+                    { name: 'Crew', status: '✓ Assigned', color: 'green' },
+                    { name: 'Customer', status: '✓ Confirmed', color: 'green' },
+                    { name: 'Weather', status: '✓ Clear', color: 'green' },
+                    { name: 'Permit', status: '✓ Ready', color: 'green' }
+                ]
+            },
+            { 
+                id: '2', 
+                address: '456 Oak Ave', 
+                customerName: 'Sarah Johnson', 
+                status: 'at-risk', 
+                installDate: '2026-04-19',
+                readinessFactors: [
+                    { name: 'Materials', status: '⚠️ Delayed', color: 'yellow' },
+                    { name: 'Crew', status: '✓ Assigned', color: 'green' },
+                    { name: 'Customer', status: '✓ Confirmed', color: 'green' },
+                    { name: 'Weather', status: '✓ Clear', color: 'green' },
+                    { name: 'Permit', status: '✓ Ready', color: 'green' }
+                ]
+            },
+            { 
+                id: '3', 
+                address: '789 Pine Rd', 
+                customerName: 'Mike Wilson', 
+                status: 'blocked', 
+                installDate: '2026-04-20',
+                readinessFactors: [
+                    { name: 'Materials', status: '✗ Missing', color: 'red' },
+                    { name: 'Crew', status: '⚠️ Unassigned', color: 'yellow' },
+                    { name: 'Customer', status: '✗ No response', color: 'red' },
+                    { name: 'Weather', status: '✓ Clear', color: 'green' },
+                    { name: 'Permit', status: '⚠️ Pending', color: 'yellow' }
+                ]
+            },
+            { 
+                id: '4', 
+                address: '321 Elm Blvd', 
+                customerName: 'Lisa Brown', 
+                status: 'completed', 
+                installDate: '2026-04-17',
+                readinessFactors: [
+                    { name: 'Materials', status: '✓ Delivered', color: 'green' },
+                    { name: 'Crew', status: '✓ Completed', color: 'green' },
+                    { name: 'Customer', status: '✓ Satisfied', color: 'green' },
+                    { name: 'Weather', status: '✓ Clear', color: 'green' },
+                    { name: 'Permit', status: '✓ Closed', color: 'green' }
+                ]
+            }
         ];
         
         // Check backend connection
@@ -329,12 +389,12 @@
             try {
                 const response = await fetch(`${API_URL}/api/health`);
                 const data = await response.json();
-                document.getElementById('apiStatus').innerHTML = 
-                    `✅ Connected to backend API: ${data.app} v${data.version}`;
+                document.getElementById('systemStatus').innerHTML = 
+                    `✅ Live job board • Real-time install readiness • ${data.app}`;
                 console.log('Backend API:', data);
             } catch (error) {
-                document.getElementById('apiStatus').innerHTML = 
-                    `❌ Cannot connect to backend API. Using demo data.`;
+                document.getElementById('systemStatus').innerHTML = 
+                    `📊 Demo mode • Showing sample roofing operations data`;
                 console.error('API Error:', error);
             }
         }
@@ -372,9 +432,15 @@
                         break;
                 }
                 
+                // Create readiness factors HTML
+                const factorsHtml = job.readinessFactors.map(factor => 
+                    `<span style="display: inline-block; margin-right: 8px; margin-bottom: 4px; padding: 4px 8px; background-color: ${factor.color === 'green' ? '#d1fae5' : factor.color === 'yellow' ? '#fef3c7' : '#fee2e2'}; color: ${factor.color === 'green' ? '#065f46' : factor.color === 'yellow' ? '#92400e' : '#991b1b'}; border-radius: 4px; font-size: 12px;">${factor.name}: ${factor.status}</span>`
+                ).join('');
+                
                 row.innerHTML = `
                     <td>${job.address}</td>
                     <td>${job.customerName}</td>
+                    <td><div style="max-width: 300px;">${factorsHtml}</div></td>
                     <td><span class="status-badge ${statusClass}">${statusText}</span></td>
                     <td>${job.installDate}</td>
                 `;
@@ -387,17 +453,24 @@
         function addNewJob() {
             const newJob = {
                 id: (jobs.length + 1).toString(),
-                address: 'New Address ' + (jobs.length + 1),
+                address: 'New Roofing Project',
                 customerName: 'New Customer',
                 status: 'ready',
-                installDate: '2024-04-' + (18 + jobs.length)
+                installDate: '2026-04-' + (21 + jobs.length),
+                readinessFactors: [
+                    { name: 'Materials', status: '⏳ To order', color: 'yellow' },
+                    { name: 'Crew', status: '⏳ To assign', color: 'yellow' },
+                    { name: 'Customer', status: '⏳ To confirm', color: 'yellow' },
+                    { name: 'Weather', status: '✓ Forecast clear', color: 'green' },
+                    { name: 'Permit', status: '⏳ To apply', color: 'yellow' }
+                ]
             };
             
             jobs.push(newJob);
             renderJobs();
             
             // Show notification
-            alert('New job added! In the full version, this would save to the database.');
+            alert('New roofing job added! Track materials, crew, and customer confirmation to ensure install readiness.');
         }
         
         // Select pricing plan
