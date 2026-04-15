@@ -48,9 +48,11 @@
                 grid-template-columns: 1fr;
                 gap: 16px;
             }
+            
             .pricing-card {
                 margin-bottom: 16px;
             }
+            
             .plan-button {
                 width: 100%;
                 min-width: unset;
@@ -80,20 +82,35 @@
         }
         
         .system-status {
-            background-color: #f0fdf4;
-            color: #166534;
-            padding: 12px;
-            border-radius: 6px;
             font-size: 14px;
-            margin-top: 12px;
-            border-left: 4px solid #22c55e;
+            color: #059669;
+            background-color: #d1fae5;
+            padding: 8px 12px;
+            border-radius: 6px;
+            display: inline-block;
+            margin-bottom: 8px;
         }
         
         .job-board {
             background: white;
+            padding: 24px;
             border-radius: 12px;
             box-shadow: 0 1px 3px rgba(0,0,0,0.1);
-            overflow: hidden;
+            margin-bottom: 24px;
+        }
+        
+        .job-board-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+        
+        .job-board-title {
+            font-size: 18px;
+            font-weight: 600;
+            margin-bottom: 16px;
+            color: #111827;
         }
         
         table {
@@ -102,28 +119,25 @@
         }
         
         th {
-            background-color: #f9fafb;
-            padding: 16px;
             text-align: left;
-            font-size: 12px;
+            padding: 12px;
+            border-bottom: 2px solid #e5e7eb;
             font-weight: 600;
-            color: #6b7280;
-            text-transform: uppercase;
-            border-bottom: 1px solid #e5e7eb;
+            color: #374151;
         }
         
         td {
-            padding: 24px 16px;
+            padding: 20px 12px;
             border-bottom: 1px solid #e5e7eb;
             vertical-align: top;
         }
         
         .status-badge {
-            padding: 6px 12px;
-            border-radius: 20px;
-            font-size: 12px;
-            font-weight: 600;
             display: inline-block;
+            padding: 4px 12px;
+            border-radius: 9999px;
+            font-size: 12px;
+            font-weight: 500;
         }
         
         .status-ready {
@@ -146,15 +160,42 @@
             color: #1e40af;
         }
         
+        .readiness-factors {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+        }
+        
+        .factor {
+            padding: 4px 8px;
+            border-radius: 4px;
+            font-size: 12px;
+            font-weight: 500;
+        }
+        
+        .factor-green {
+            background-color: #d1fae5;
+            color: #065f46;
+        }
+        
+        .factor-yellow {
+            background-color: #fef3c7;
+            color: #92400e;
+        }
+        
+        .factor-red {
+            background-color: #fee2e2;
+            color: #991b1b;
+        }
+        
         .add-button {
             background-color: #3b82f6;
             color: white;
             border: none;
-            padding: 12px 24px;
-            border-radius: 8px;
-            cursor: pointer;
+            padding: 8px 16px;
+            border-radius: 6px;
             font-weight: 500;
-            font-size: 14px;
+            cursor: pointer;
             transition: background-color 0.2s;
         }
         
@@ -162,29 +203,22 @@
             background-color: #2563eb;
         }
         
-        .footer {
-            margin-top: 40px;
-            text-align: center;
-            color: #6b7280;
-            font-size: 14px;
-            padding: 20px;
-        }
-        
         .pricing {
             background: white;
+            padding: 24px;
             border-radius: 12px;
             box-shadow: 0 1px 3px rgba(0,0,0,0.1);
-            padding: 24px;
-            margin-top: 24px;
+            margin-top: 40px;
         }
         
         .pricing-title {
-            font-size: 20px;
+            font-size: 18px;
             font-weight: 600;
             margin-bottom: 16px;
             color: #111827;
         }
         
+        /* PRICING GRID - FIXED */
         .pricing-grid {
             display: grid;
             grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
@@ -196,6 +230,7 @@
             border: 1px solid #e5e7eb;
             border-radius: 8px;
             padding: 24px;
+            background: white;
             transition: transform 0.2s, box-shadow 0.2s;
         }
         
@@ -231,6 +266,7 @@
             border-bottom: 1px solid #f3f4f6;
         }
         
+        /* BUTTON STYLES - FIXED */
         .plan-button {
             width: auto;
             min-width: 200px;
@@ -253,6 +289,15 @@
         
         .plan-button.primary:hover {
             background-color: #2563eb;
+        }
+        
+        .footer {
+            margin-top: 40px;
+            padding: 24px;
+            text-align: center;
+            color: #6b7280;
+            font-size: 14px;
+            border-top: 1px solid #e5e7eb;
         }
     </style>
 </head>
@@ -284,22 +329,20 @@
                         <th>Install Date</th>
                     </tr>
                 </thead>
-                <tbody id="jobsTable">
-                    <!-- Jobs will be loaded here -->
+                <tbody id="jobTable">
+                    <!-- Jobs will be populated by JavaScript -->
                 </tbody>
             </table>
             
-            <div style="padding: 24px; border-top: 1px solid #e5e7eb; background-color: #f9fafb;">
-                <div style="display: flex; justify-content: space-between; align-items: center;">
-                    <div>
-                        <p style="font-size: 14px; color: #6b7280;">
-                            Showing <span id="jobCount">4</span> jobs
-                        </p>
-                    </div>
-                    <button class="add-button" onclick="addNewJob()">
-                        + Schedule New Job
-                    </button>
+            <div class="job-board-header">
+                <div>
+                    <p style="font-size: 14px; color: #6b7280;">
+                        Showing <span id="jobCount">4</span> jobs
+                    </p>
                 </div>
+                <button class="add-button" onclick="addNewJob()">
+                    + Schedule New Job
+                </button>
             </div>
         </div>
         
@@ -374,292 +417,4 @@
         <!-- Pricing -->
         <div class="pricing" style="margin-top: 40px;">
             <h2 class="pricing-title">Simple pricing, no complexity</h2>
-            <p style="color: #6b7280; margin-bottom: 20px;">Designed for roofing companies who need better workflow control without full‑suite CRM cost</p>
-            
-            <div class="pricing-grid">
-                <div class="pricing-card">
-                    <div class="plan-name">Starter</div>
-                    <div class="plan-subtitle" style="font-size: 14px; color: #6b7280; margin-bottom: 12px;">Small owner-operator teams</div>
-                    <div class="plan-price">$99<span style="font-size: 16px; color: #6b7280;">/month</span></div>
-                    <ul class="plan-features">
-                        <li>Up to 10 active jobs</li>
-                        <li>Job readiness tracking</li>
-                        <li>Materials & crew status</li>
-                        <li>Email support</li>
-                        <li>Mobile dashboard</li>
-                    </ul>
-                    <a href="https://buy.stripe.com/7sY14neeU3zv3ES0TO6g800" class="plan-button primary">Get Started - $99/month</a>
-                </div>
-                
-                <div class="pricing-card pro">
-                    <div class="plan-name">Pro</div>
-                    <div class="plan-subtitle" style="font-size: 14px; color: #6b7280; margin-bottom: 12px;">Growing production teams</div>
-                    <div class="plan-price">$199<span style="font-size: 16px; color: #6b7280;">/month</span></div>
-                    <ul class="plan-features">
-                        <li>Up to 50 active jobs</li>
-                        <li>Advanced readiness analytics</li>
-                        <li>Team collaboration tools</li>
-                        <li>Priority support</li>
-                        <li>Custom reporting</li>
-                        <li>Weather delay alerts</li>
-                    </ul>
-                    <a href="https://buy.stripe.com/00w6oH8UA8TP7V81XS6g801" class="plan-button primary">Get Started - $199/month</a>
-                </div>
-                
-                <div class="pricing-card">
-                    <div class="plan-name">Team</div>
-                    <div class="plan-subtitle" style="font-size: 14px; color: #6b7280; margin-bottom: 12px;">Multi-crew or multi-location roofers</div>
-                    <div class="plan-price">$349<span style="font-size: 16px; color: #6b7280;">/month</span></div>
-                    <ul class="plan-features">
-                        <li>Unlimited active jobs</li>
-                        <li>Multiple crew management</li>
-                        <li>API & integration access</li>
-                        <li>White-label dashboard</li>
-                        <li>Dedicated operations support</li>
-                        <li>Advanced scheduling tools</li>
-                    </ul>
-                    <a href="https://buy.stripe.com/eVq7sL1s80nj8Zc5a46g802" class="plan-button primary">Get Started - $349/month</a>
-                </div>
-            </div>
-        </div>
-        
-        <!-- Footer -->
-        <div class="footer">
-            <p>© 2026 RoofReady. A simple, mobile‑first app built for roofing companies that want to know exactly which jobs are ready to install.</p>
-            <p>The goal is simple: less stress on install day, fewer surprise delays, and more predictable production.</p>
-            <p style="margin-top: 20px; font-size: 12px; color: #9ca3af;">
-                Replace spreadsheets, sticky notes, and group chats • Office and field in sync • Built for roofing operations
-            </p>
-        </div>
-    </div>
-    
-    <script>
-        // Backend API URL
-        const API_URL = 'https://roofready-fulfillment-production.up.railway.app';
-        
-        // Realistic roofing jobs data for 2026
-        const jobs = [
-            { 
-                id: '1', 
-                address: '123 Main St', 
-                customerName: 'John Smith', 
-                status: 'ready', 
-                installDate: '2026-04-18',
-                readinessFactors: [
-                    { name: 'Materials', status: '✓ Ordered', color: 'green' },
-                    { name: 'Crew', status: '✓ Assigned', color: 'green' },
-                    { name: 'Customer', status: '✓ Confirmed', color: 'green' },
-                    { name: 'Weather', status: '✓ Clear', color: 'green' },
-                    { name: 'Permit', status: '✓ Ready', color: 'green' }
-                ]
-            },
-            { 
-                id: '2', 
-                address: '456 Oak Ave', 
-                customerName: 'Sarah Johnson', 
-                status: 'at-risk', 
-                installDate: '2026-04-19',
-                readinessFactors: [
-                    { name: 'Materials', status: '⚠️ Delayed', color: 'yellow' },
-                    { name: 'Crew', status: '✓ Assigned', color: 'green' },
-                    { name: 'Customer', status: '✓ Confirmed', color: 'green' },
-                    { name: 'Weather', status: '✓ Clear', color: 'green' },
-                    { name: 'Permit', status: '✓ Ready', color: 'green' }
-                ]
-            },
-            { 
-                id: '3', 
-                address: '789 Pine Rd', 
-                customerName: 'Mike Wilson', 
-                status: 'blocked', 
-                installDate: '2026-04-20',
-                readinessFactors: [
-                    { name: 'Materials', status: '✗ Missing', color: 'red' },
-                    { name: 'Crew', status: '⚠️ Unassigned', color: 'yellow' },
-                    { name: 'Customer', status: '✗ No response', color: 'red' },
-                    { name: 'Weather', status: '✓ Clear', color: 'green' },
-                    { name: 'Permit', status: '⚠️ Pending', color: 'yellow' }
-                ]
-            },
-            { 
-                id: '4', 
-                address: '321 Elm Blvd', 
-                customerName: 'Lisa Brown', 
-                status: 'completed', 
-                installDate: '2026-04-17',
-                readinessFactors: [
-                    { name: 'Materials', status: '✓ Delivered', color: 'green' },
-                    { name: 'Crew', status: '✓ Completed', color: 'green' },
-                    { name: 'Customer', status: '✓ Satisfied', color: 'green' },
-                    { name: 'Weather', status: '✓ Clear', color: 'green' },
-                    { name: 'Permit', status: '✓ Closed', color: 'green' }
-                ]
-            }
-        ];
-        
-        // Check backend connection
-        async function checkBackend() {
-            try {
-                const response = await fetch(`${API_URL}/api/health`);
-                const data = await response.json();
-                document.getElementById('systemStatus').innerHTML = 
-                    `✅ Live job readiness dashboard • Real-time install tracking`;
-                console.log('Backend API:', data);
-            } catch (error) {
-                document.getElementById('systemStatus').innerHTML = 
-                    `📊 Live job readiness dashboard • Showing sample roofing operations`;
-                console.error('API Error:', error);
-            }
-        }
-        
-        // Render jobs table
-        function renderJobs() {
-            const tableBody = document.getElementById('jobsTable');
-            const jobCount = document.getElementById('jobCount');
-            
-            tableBody.innerHTML = '';
-            jobCount.textContent = jobs.length;
-            
-            jobs.forEach(job => {
-                const row = document.createElement('tr');
-                
-                let statusClass = '';
-                let statusText = '';
-                
-                switch(job.status) {
-                    case 'ready':
-                        statusClass = 'status-ready';
-                        statusText = 'Ready';
-                        break;
-                    case 'at-risk':
-                        statusClass = 'status-at-risk';
-                        statusText = 'At Risk';
-                        break;
-                    case 'blocked':
-                        statusClass = 'status-blocked';
-                        statusText = 'Blocked';
-                        break;
-                    case 'completed':
-                        statusClass = 'status-completed';
-                        statusText = 'Completed';
-                        break;
-                }
-                
-                // Create readiness factors HTML
-                const factorsHtml = job.readinessFactors.map(factor => 
-                    `<span style="display: inline-block; margin-right: 8px; margin-bottom: 4px; padding: 4px 8px; background-color: ${factor.color === 'green' ? '#d1fae5' : factor.color === 'yellow' ? '#fef3c7' : '#fee2e2'}; color: ${factor.color === 'green' ? '#065f46' : factor.color === 'yellow' ? '#92400e' : '#991b1b'}; border-radius: 4px; font-size: 12px;">${factor.name}: ${factor.status}</span>`
-                ).join('');
-                
-                row.innerHTML = `
-                    <td>${job.address}</td>
-                    <td>${job.customerName}</td>
-                    <td><div style="max-width: 300px;">${factorsHtml}</div></td>
-                    <td><span class="status-badge ${statusClass}">${statusText}</span></td>
-                    <td>${job.installDate}</td>
-                `;
-                
-                tableBody.appendChild(row);
-            });
-        }
-        
-        // Add new job
-        function addNewJob() {
-            const newJob = {
-                id: (jobs.length + 1).toString(),
-                address: 'New Roofing Project',
-                customerName: 'New Customer',
-                status: 'ready',
-                installDate: '2026-04-' + (21 + jobs.length),
-                readinessFactors: [
-                    { name: 'Materials', status: '⏳ To order', color: 'yellow' },
-                    { name: 'Crew', status: '⏳ To assign', color: 'yellow' },
-                    { name: 'Customer', status: '⏳ To confirm', color: 'yellow' },
-                    { name: 'Weather', status: '✓ Forecast clear', color: 'green' },
-                    { name: 'Permit', status: '⏳ To apply', color: 'yellow' }
-                ]
-            };
-            
-            jobs.push(newJob);
-            renderJobs();
-            
-            // Show notification
-            alert('New roofing job scheduled! Track materials, crew assignment, and customer confirmation to ensure install readiness.');
-        }
-        
-        // Select pricing plan
-        function selectPlan(planName) {
-            alert(`You selected the ${planName} plan! In the full version, this would redirect to Stripe checkout.`);
-        }
-        
-        // Initialize
-        document.addEventListener('DOMContentLoaded', () => {
-            checkBackend();
-            renderJobs();
-            document.getElementById('backendUrl').textContent = API_URL;
-        });
-        
-        // Stripe Checkout
-        const stripe = Stripe('pk_live_51STxu4F4HWFknWFw05SbItafoAKLmCAOOZLaHY3aWJuBAmHN3uo2cPMXk4AHeLCYEAIP3Oe98ZcoGtPZZRfCUkzU00cde8vOvG');
-        
-        async function startCheckout(plan) {
-            try {
-                // Show loading state
-                const button = event.target;
-                const originalText = button.textContent;
-                button.textContent = 'Processing...';
-                button.disabled = true;
-                
-                // Create checkout session
-                const response = await fetch(`${API_URL}/api/checkout/session`, {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                    },
-                    body: JSON.stringify({
-                        plan: plan,
-                        email: 'customer@example.com', // In real app, get from form
-                        companyName: 'New Roofing Company',
-                        fullName: 'Account Owner'
-                    })
-                });
-                
-                if (!response.ok) {
-                    throw new Error('Failed to create checkout session');
-                }
-                
-                const { sessionId } = await response.json();
-                
-                // Redirect to Stripe Checkout
-                const result = await stripe.redirectToCheckout({ sessionId });
-                
-                if (result.error) {
-                    alert('Checkout error: ' + result.error.message);
-                    button.textContent = originalText;
-                    button.disabled = false;
-                }
-            } catch (error) {
-                console.error('Checkout error:', error);
-                alert('Error starting checkout. Please try again.');
-                
-                // Fallback to direct Stripe links
-                const stripeLinks = {
-                    starter: 'https://buy.stripe.com/7sY14neeU3zv3ES0TO6g800',
-                    pro: 'https://buy.stripe.com/00w6oH8UA8TP7V81XS6g801',
-                    team: 'https://buy.stripe.com/eVq7sL1s80nj8Zc5a46g802'
-                };
-                
-                if (stripeLinks[plan]) {
-                    if (confirm('Redirecting to Stripe checkout...')) {
-                        window.location.href = stripeLinks[plan];
-                    }
-                }
-            }
-        }
-        
-        // Keep the old selectPlan function for demo purposes
-        function selectPlan(plan) {
-            alert(`Thank you for your interest in RoofReady ${plan} plan!\n\nA sales representative will contact you shortly to schedule a demo.`);
-        }
-    </script>
-</body>
-</html>
+            <p style="color: #6b7280
