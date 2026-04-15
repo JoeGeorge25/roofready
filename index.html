@@ -6,7 +6,6 @@
     <title>RoofReady | Simple job readiness for roofing companies</title>
     <script src="https://js.stripe.com/v3/"></script>
     <style>
-        /* Cache bust: 2026-04-15-22:33 */
         * { margin: 0; padding: 0; box-sizing: border-box; font-family: sans-serif; }
         body { background: #f9fafb; color: #111827; }
         .container { max-width: 1200px; margin: 0 auto; padding: 20px; }
@@ -38,8 +37,8 @@
         
         /* Pricing */
         .pricing-section { margin: 40px 0; }
-        .pricing-grid { display: flex; flex-wrap: wrap; gap: 20px; margin-top: 20px; justify-content: center; }
-        .pricing-card { flex: 1; min-width: 300px; max-width: 350px; background: white; border: 1px solid #e5e7eb; border-radius: 8px; padding: 24px; }
+        .pricing-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 20px; margin-top: 20px; }
+        .pricing-card { background: white; border: 1px solid #e5e7eb; border-radius: 8px; padding: 24px; }
         .pricing-card.pro { border-color: #3b82f6; background: #eff6ff; position: relative; }
         .pricing-card.pro::before { content: "Most Popular"; position: absolute; top: -12px; left: 50%; transform: translateX(-50%); background: #3b82f6; color: white; padding: 6px 16px; border-radius: 20px; font-size: 12px; font-weight: 600; }
         .plan-name { font-size: 20px; font-weight: 600; margin-bottom: 8px; }
@@ -58,16 +57,10 @@
         /* Footer */
         .footer { margin-top: 60px; padding: 30px; text-align: center; color: #6b7280; font-size: 14px; border-top: 1px solid #e5e7eb; background: white; border-radius: 12px; }
         
-        /* Tablet (768px - 1024px) */
-        @media (max-width: 1024px) and (min-width: 769px) {
-            .pricing-card { min-width: 280px; max-width: 320px; }
-        }
-        
         /* Mobile */
         @media (max-width: 768px) {
             .container { padding: 16px; }
-            .pricing-grid { display: block; }
-            .pricing-card { max-width: 100%; margin-bottom: 20px; }
+            .pricing-grid { grid-template-columns: 1fr; }
             .plan-button { width: 100%; min-width: unset; }
             .sync-grid { grid-template-columns: 1fr; }
         }
@@ -86,7 +79,7 @@
                 <a href="dashboard.html" style="background: #3b82f6; color: white; padding: 12px 24px; border-radius: 8px; text-decoration: none; font-weight: 600; display: inline-block;">
                     🚀 Login to Operations Dashboard
                 </a>
-                <p style="font-size: 14px; color: #6b7280; margin-top: 8px;">See the complete operational platform</p>
+                <p style="font-size: 14px; color: #6b7280; margin-top: 8px;">See the complete operational platform with job ownership, alerts, and team management</p>
             </div>
         </div>
         
@@ -109,11 +102,11 @@
                         <td>John & Sarah Miller</td>
                         <td>
                             <div class="readiness-factors">
-                                <span class="factor factor-green">Materials ✓</span>
-                                <span class="factor factor-green">Crew ✓</span>
-                                <span class="factor factor-yellow">Customer</span>
-                                <span class="factor factor-green">Weather ✓</span>
-                                <span class="factor factor-red">Permit</span>
+                                <span class="factor factor-green" title="Assigned to: Office Manager">Materials ✓</span>
+                                <span class="factor factor-green" title="Assigned to: Field Supervisor">Crew ✓</span>
+                                <span class="factor factor-yellow" title="Assigned to: Sales Rep - Due Today">Customer</span>
+                                <span class="factor factor-green" title="System monitored">Weather ✓</span>
+                                <span class="factor factor-red" title="Assigned to: Office Manager - Overdue">Permit</span>
                             </div>
                         </td>
                         <td><span class="status-badge status-at-risk">At Risk</span></td>
@@ -124,11 +117,11 @@
                         <td>Robert Johnson</td>
                         <td>
                             <div class="readiness-factors">
-                                <span class="factor factor-green">Materials ✓</span>
-                                <span class="factor factor-green">Crew ✓</span>
-                                <span class="factor factor-green">Customer ✓</span>
-                                <span class="factor factor-green">Weather ✓</span>
-                                <span class="factor factor-green">Permit ✓</span>
+                                <span class="factor factor-green" title="Assigned to: Office Manager">Materials ✓</span>
+                                <span class="factor factor-green" title="Assigned to: Field Supervisor">Crew ✓</span>
+                                <span class="factor factor-green" title="Assigned to: Sales Rep">Customer ✓</span>
+                                <span class="factor factor-green" title="System monitored">Weather ✓</span>
+                                <span class="factor factor-green" title="Assigned to: Office Manager">Permit ✓</span>
                             </div>
                         </td>
                         <td><span class="status-badge status-ready">Ready</span></td>
@@ -139,11 +132,11 @@
                         <td>Maria Garcia</td>
                         <td>
                             <div class="readiness-factors">
-                                <span class="factor factor-red">Materials</span>
-                                <span class="factor factor-green">Crew ✓</span>
-                                <span class="factor factor-green">Customer ✓</span>
-                                <span class="factor factor-yellow">Weather</span>
-                                <span class="factor factor-green">Permit ✓</span>
+                                <span class="factor factor-red" title="Assigned to: Office Manager - Delayed shipment">Materials</span>
+                                <span class="factor factor-green" title="Assigned to: Field Supervisor">Crew ✓</span>
+                                <span class="factor factor-green" title="Assigned to: Sales Rep">Customer ✓</span>
+                                <span class="factor factor-yellow" title="30% rain chance - Monitor">Weather</span>
+                                <span class="factor factor-green" title="Assigned to: Office Manager">Permit ✓</span>
                             </div>
                         </td>
                         <td><span class="status-badge status-blocked">Blocked</span></td>
@@ -161,6 +154,11 @@
         <div class="sync-section">
             <h2 style="font-size: 24px; font-weight: 600; text-align: center; margin-bottom: 8px;">Office and field in sync</h2>
             <p style="color: #6b7280; text-align: center; margin-bottom: 30px;">Built for roofing operations teams</p>
+            <p style="text-align: center; margin-bottom: 20px;">
+                <a href="dashboard.html" style="color: #3b82f6; text-decoration: none; font-weight: 500;">
+                    👉 See complete operational platform with job ownership, alerts, and team management
+                </a>
+            </p>
             
             <div class="sync-grid">
                 <div class="sync-card">
