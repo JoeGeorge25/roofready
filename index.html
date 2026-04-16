@@ -464,8 +464,8 @@
                     // Close modal
                     document.body.removeChild(overlay);
                     
-                    // Note: In a full implementation, we would refresh the dashboard
-                    // window.location.reload();
+                    // Add the new job to the job board
+                    addJobToBoard(result.job);
                     
                 } catch (error) {
                     console.error('Error saving job:', error);
@@ -574,6 +574,93 @@
                     demoBtn.disabled = false;
                 }
             });
+        }
+        
+        // Add new job to the job board
+        function addJobToBoard(job) {
+            // Format the install date
+            const installDate = new Date(job.install_date);
+            const formattedDate = installDate.toLocaleDateString('en-US', { 
+                month: 'short', 
+                day: 'numeric', 
+                year: 'numeric' 
+            });
+            
+            // Calculate days until install
+            const today = new Date();
+            const timeDiff = installDate - today;
+            const daysUntil = Math.ceil(timeDiff / (1000 * 60 * 60 * 24));
+            let daysText = `${daysUntil} days`;
+            if (daysUntil === 0) daysText = 'Today';
+            if (daysUntil === 1) daysText = 'Tomorrow';
+            
+            // Determine status and styling
+            let statusClass = 'status-at-risk';
+            let statusText = 'At Risk';
+            let statusColor = 'at_risk';
+            
+            // Create readiness factors HTML
+            const factorsHtml = `
+                <div class="readiness-factors">
+                    <span class="factor ${job.materials_status === 'complete' ? 'factor-green' : 'factor-red'}" title="Assigned to: Office Manager">
+                        Materials ${job.materials_status === 'complete' ? '✓' : ''}
+                    </span>
+                    <span class="factor factor-green" title="Assigned to: Field Supervisor">
+                        Crew ✓
+                    </span>
+                    <span class="factor ${job.customer_confirmation === 'confirmed' ? 'factor-green' : 'factor-yellow'}" title="Assigned to: Sales Rep">
+                        Customer ${job.customer_confirmation === 'confirmed' ? '✓' : ''}
+                    </span>
+                    <span class="factor ${job.weather_status === 'clear' ? 'factor-green' : 'factor-yellow'}" title="System monitored">
+                        Weather ${job.weather_status === 'clear' ? '✓' : ''}
+                    </span>
+                    <span class="factor ${job.permit_status === 'approved' ? 'factor-green' : 'factor-red'}" title="Assigned to: Office Manager">
+                        Permit ${job.permit_status === 'approved' ? '✓' : ''}
+                    </span>
+                </div>
+            `;
+            
+            // Create the new job row HTML
+            const newRow = document.createElement('tr');
+            newRow.innerHTML = `
+                <td>
+                    <strong>${job.address}</strong><br>
+                    <small>${job.customer_name}</small>
+                </td>
+                <td><strong>${formattedDate}</strong><br><small style="color: #6b7280;">${job.crew_assignment} • ${daysText}</small></td>
+                <td><span class="status-badge ${statusClass}">${statusText}</span></td>
+                <td>${factorsHtml}</td>
+            `;
+            
+            // Find the job table body and add the new row at the top
+            const tableBody = document.querySelector('.job-board tbody');
+            if (tableBody) {
+                // Get all existing data rows (skip the header in thead)
+                const existingRows = tableBody.querySelectorAll('tr');
+                
+                // Insert at the beginning of the table body
+                if (existingRows.length > 0) {
+                    tableBody.insertBefore(newRow, existingRows[0]);
+                } else {
+                    tableBody.appendChild(newRow);
+                }
+                
+                // Show a subtle visual feedback
+                newRow.style.backgroundColor = '#f0f9ff';
+                setTimeout(() => {
+                    newRow.style.backgroundColor = '';
+                }, 2000);
+                
+                // Update the job count in the demo success modal if it exists
+                updateDemoJobCount(1);
+            }
+        }
+        
+        // Update demo job count
+        function updateDemoJobCount(increment = 0) {
+            // This would update a job counter if we had one
+            // For now, we'll just log it
+            console.log(`Job count updated by ${increment}`);
         }
     </script>
 </body>
