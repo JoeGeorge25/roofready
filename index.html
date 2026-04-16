@@ -20,7 +20,7 @@
         table { width: 100%; border-collapse: collapse; }
         th { text-align: left; padding: 12px; border-bottom: 2px solid #e5e7eb; font-weight: 600; }
         td { padding: 16px 12px; border-bottom: 1px solid #e5e7eb; }
-        .status-badge { padding: 4px 12px; border-radius: 20px; font-size: 12px; font-weight: 500; }
+        .status-badge { padding: 6px 16px; border-radius: 20px; font-size: 14px; font-weight: 600; }
         .status-ready { background: #d1fae5; color: #065f46; }
         .status-at-risk { background: #fef3c7; color: #92400e; }
         .status-blocked { background: #fee2e2; color: #991b1b; }
@@ -63,6 +63,11 @@
             .pricing-grid { grid-template-columns: 1fr; }
             .plan-button { width: 100%; min-width: unset; }
             .sync-grid { grid-template-columns: 1fr; }
+            
+            /* Make table responsive */
+            .job-board { overflow-x: auto; }
+            table { min-width: 600px; }
+            td, th { white-space: nowrap; }
         }
     </style>
 </head>
@@ -103,7 +108,7 @@
                             <strong>123 Maple St, Anytown</strong><br>
                             <small>John & Sarah Miller</small>
                         </td>
-                        <td>Apr 22, 2026<br><small style="color: #6b7280;">Crew A • 2 days</small></td>
+                        <td><strong>Apr 22, 2026</strong><br><small style="color: #6b7280;">Crew A • 2 days</small></td>
                         <td><span class="status-badge status-at-risk">At Risk</span></td>
                         <td>
                             <div class="readiness-factors">
@@ -120,7 +125,7 @@
                             <strong>456 Oak Ave, Springfield</strong><br>
                             <small>Robert Johnson</small>
                         </td>
-                        <td>Apr 18, 2026<br><small style="color: #6b7280;">Crew B • Tomorrow</small></td>
+                        <td><strong>Apr 18, 2026</strong><br><small style="color: #6b7280;">Crew B • Tomorrow</small></td>
                         <td><span class="status-badge status-ready">Ready</span></td>
                         <td>
                             <div class="readiness-factors">
@@ -137,7 +142,7 @@
                             <strong>789 Pine Rd, Riverside</strong><br>
                             <small>Maria Garcia</small>
                         </td>
-                        <td>Apr 25, 2026<br><small style="color: #6b7280;">Crew C • 7 days</small></td>
+                        <td><strong>Apr 25, 2026</strong><br><small style="color: #6b7280;">Crew C • 7 days</small></td>
                         <td><span class="status-badge status-blocked">Blocked</span></td>
                         <td>
                             <div class="readiness-factors">
