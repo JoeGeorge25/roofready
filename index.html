@@ -464,9 +464,16 @@
                     // Close modal
                     document.body.removeChild(overlay);
                     
-                    // Add the new job to the job board
-                    console.log('Job created successfully:', result.job);
-                    addJobToBoard(result.job);
+                    // Success - reload page to show new job
+                    alert(`✅ Demo job scheduled successfully!\n\n${address}\nCustomer: ${customer}\nInstall: ${installDate}\nCrew: ${crew}\n\nPage will reload to show the new job.`);
+                    
+                    // Close modal
+                    document.body.removeChild(overlay);
+                    
+                    // Reload page after short delay
+                    setTimeout(() => {
+                        window.location.reload();
+                    }, 1500);
                     
                 } catch (error) {
                     console.error('Error saving job:', error);
