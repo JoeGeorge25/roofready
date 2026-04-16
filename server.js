@@ -55,12 +55,72 @@ const server = http.createServer((req, res) => {
     return;
   }
   
+  // Demo start endpoint
+  if (req.url === '/api/demo/start' && req.method === 'POST') {
+    let body = '';
+    req.on('data', chunk => {
+      body += chunk.toString();
+    });
+    
+    req.on('end', () => {
+      try {
+        // Generate demo session
+        const demoId = 'demo_' + Date.now() + '_' + Math.random().toString(36).substr(2, 9);
+        const demoToken = `demo_${demoId}_${Date.now()}`;
+        
+        res.writeHead(200, { 'Content-Type': 'application/json' });
+        res.end(JSON.stringify({
+          success: true,
+          tenantId: demoId,
+          token: demoToken,
+          message: 'Demo session started',
+          note: 'Frontend-only demo. Database integration pending.'
+        }));
+      } catch (error) {
+        res.writeHead(500, { 'Content-Type': 'application/json' });
+        res.end(JSON.stringify({ error: 'Internal server error' }));
+      }
+    });
+    return;
+  }
+  
+  // Demo jobs endpoint
+  if (req.url === '/api/demo/jobs' && req.method === 'POST') {
+    let body = '';
+    req.on('data', chunk => {
+      body += chunk.toString();
+    });
+    
+    req.on('end', () => {
+      try {
+        const data = JSON.parse(body || '{}');
+        
+        res.writeHead(200, { 'Content-Type': 'application/json' });
+        res.end(JSON.stringify({
+          success: true,
+          job: {
+            id: 'demo_' + Date.now(),
+            ...data.jobData,
+            created_at: new Date().toISOString(),
+            is_demo: true
+          },
+          message: 'Demo job created successfully',
+          note: 'Frontend-only demo. Database integration pending.'
+        }));
+      } catch (error) {
+        res.writeHead(500, { 'Content-Type': 'application/json' });
+        res.end(JSON.stringify({ error: 'Internal server error' }));
+      }
+    });
+    return;
+  }
+  
   // Root endpoint
   if (req.url === '/') {
     res.writeHead(200, { 'Content-Type': 'application/json' });
     res.end(JSON.stringify({
       message: 'Welcome to RoofReady SaaS API',
-      endpoints: ['/api/health', '/api/test', '/api/jobs'],
+      endpoints: ['/api/health', '/api/test', '/api/jobs', '/api/demo/start', '/api/demo/jobs'],
       cors: 'enabled',
       frontend: 'https://roofready-seven.vercel.app',
       backend: 'https://roofready-production.up.railway.app'

@@ -263,8 +263,8 @@
     </div>
     
     <script>
-        // API Configuration
-        const API_BASE = 'https://roofready-fulfillment-production.up.railway.app';
+        // API Configuration - Using main backend API
+        const API_BASE = 'https://roofready-production.up.railway.app';
         
         // Try Demo Dashboard Button
         document.getElementById('try-demo-btn').addEventListener('click', async function() {
@@ -276,19 +276,28 @@
                 button.innerHTML = '⏳ Preparing demo...';
                 button.disabled = true;
                 
-                // TEMPORARY: Frontend-only demo while backend deploys
-                // In production, this would call: POST /api/demo/start
+                // Call demo start endpoint
+                const response = await fetch(`${API_BASE}/api/demo/start`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    }
+                });
                 
-                // Generate demo session locally
-                const demoId = 'demo_' + Date.now() + '_' + Math.random().toString(36).substr(2, 9);
-                const demoToken = `demo_${demoId}_${Date.now()}`;
+                if (!response.ok) {
+                    throw new Error('Failed to start demo');
+                }
+                
+                const data = await response.json();
                 
                 // Store demo session token
-                localStorage.setItem('roofready_demo_token', demoToken);
-                localStorage.setItem('roofready_demo_tenant', demoId);
+                if (data.token) {
+                    localStorage.setItem('roofready_demo_token', data.token);
+                    localStorage.setItem('roofready_demo_tenant', data.tenantId);
+                }
                 
                 // Show demo success modal
-                showDemoSuccessModal(demoId);
+                showDemoSuccessModal(data.tenantId);
                 
             } catch (error) {
                 console.error('Demo error:', error);
@@ -417,14 +426,40 @@
                         throw new Error('Demo session not found');
                     }
                     
-                    // TEMPORARY: Frontend-only job creation while backend deploys
-                    // In production, this would call: POST /api/demo/jobs
+                    // Prepare job data
+                    const jobData = {
+                        address,
+                        customer_name: customer,
+                        install_date: installDate,
+                        crew_assignment: crew,
+                        materials_status: 'pending',
+                        customer_confirmation: 'pending',
+                        weather_status: 'clear',
+                        permit_status: 'pending',
+                        notes: 'Demo job created from marketing site'
+                    };
                     
-                    // Simulate API delay
-                    await new Promise(resolve => setTimeout(resolve, 800));
+                    // Call demo job creation API
+                    const response = await fetch(`${API_BASE}/api/demo/jobs`, {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json'
+                        },
+                        body: JSON.stringify({
+                            tenantId: demoTenant,
+                            jobData
+                        })
+                    });
+                    
+                    if (!response.ok) {
+                        const errorData = await response.json();
+                        throw new Error(errorData.error || 'Failed to create job');
+                    }
+                    
+                    const result = await response.json();
                     
                     // Show success
-                    alert(`✅ Demo job scheduled successfully!\n\n${address}\nCustomer: ${customer}\nInstall: ${installDate}\nCrew: ${crew}\n\nNote: This is a frontend demo. Backend API deployment in progress.`);
+                    alert(`✅ Demo job scheduled successfully!\n\n${address}\nCustomer: ${customer}\nInstall: ${installDate}\nCrew: ${crew}`);
                     
                     // Close modal
                     document.body.removeChild(overlay);
@@ -480,9 +515,6 @@
                 <div style="font-size: 48px; margin-bottom: 20px;">🎉</div>
                 <h2 style="margin-bottom: 16px;">Demo Ready!</h2>
                 <p style="color: #6b7280; margin-bottom: 20px;">You now have access to the RoofReady demo dashboard with sample roofing jobs.</p>
-                <div style="background: #fef3c7; color: #92400e; padding: 12px; border-radius: 6px; margin-bottom: 20px; font-size: 14px;">
-                    <strong>Note:</strong> Frontend-only demo. Backend API deployment in progress.
-                </div>
                 
                 <div style="background: #f9fafb; padding: 20px; border-radius: 8px; margin-bottom: 20px; text-align: left;">
                     <p style="margin: 0 0 10px 0; font-weight: 500;">Demo Features:</p>
