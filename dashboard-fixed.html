@@ -1,0 +1,314 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>RoofReady | Operations Dashboard</title>
+    <style>
+        :root {
+            --primary: #3b82f6;
+            --primary-dark: #2563eb;
+            --success: #10b981;
+            --warning: #f59e0b;
+            --danger: #ef4444;
+            --gray-50: #f9fafb;
+            --gray-100: #f3f4f6;
+            --gray-200: #e5e7eb;
+            --gray-300: #d1d5db;
+            --gray-400: #9ca3af;
+            --gray-500: #6b7280;
+            --gray-600: #4b5563;
+            --gray-700: #374151;
+            --gray-800: #1f2937;
+            --gray-900: #111827;
+        }
+        
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; }
+        body { background: var(--gray-50); color: var(--gray-900); line-height: 1.5; }
+        
+        .container { max-width: 1400px; margin: 0 auto; padding: 24px; }
+        
+        /* Header */
+        .header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 32px; padding-bottom: 24px; border-bottom: 1px solid var(--gray-200); }
+        .header-left h1 { font-size: 28px; font-weight: 700; margin-bottom: 8px; }
+        .header-subtitle { color: var(--gray-600); font-size: 14px; }
+        .user-info { display: flex; align-items: center; gap: 12px; }
+        .user-avatar { width: 40px; height: 40px; background: var(--primary); color: white; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: 600; }
+        .plan-badge { background: var(--success); color: white; font-size: 11px; padding: 4px 8px; border-radius: 4px; font-weight: 500; }
+        
+        /* Stats */
+        .stats-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 20px; margin-bottom: 32px; }
+        .stat-card { background: white; border-radius: 12px; padding: 24px; border: 1px solid var(--gray-200); }
+        .stat-value { font-size: 36px; font-weight: 700; margin-bottom: 8px; }
+        .stat-label { font-size: 14px; color: var(--gray-600); margin-bottom: 12px; }
+        
+        /* Alerts */
+        .alerts-section { background: #fef3c7; border: 1px solid #fbbf24; border-radius: 12px; padding: 20px; margin-bottom: 32px; }
+        .alert-header { display: flex; align-items: center; gap: 8px; margin-bottom: 16px; color: #92400e; font-weight: 600; }
+        .alert-list { list-style: none; }
+        .alert-item { padding: 12px; background: white; border-radius: 8px; margin-bottom: 8px; border-left: 4px solid var(--warning); }
+        .alert-critical { border-left-color: var(--danger); }
+        
+        /* Job Board */
+        .job-board { margin-bottom: 40px; }
+        .section-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 24px; }
+        .section-title { font-size: 20px; font-weight: 600; }
+        
+        /* Job Cards */
+        .job-cards { display: grid; grid-template-columns: repeat(auto-fill, minmax(350px, 1fr)); gap: 20px; }
+        .job-card { background: white; border: 1px solid var(--gray-200); border-radius: 12px; padding: 24px; cursor: pointer; }
+        .job-card:hover { border-color: var(--primary); }
+        .job-header { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 16px; }
+        .job-address { font-size: 16px; font-weight: 600; margin-bottom: 4px; }
+        .job-customer { color: var(--gray-600); font-size: 14px; }
+        .job-status { padding: 4px 12px; border-radius: 20px; font-size: 12px; font-weight: 500; }
+        .status-ready { background: #d1fae5; color: #065f46; }
+        .status-at-risk { background: #fef3c7; color: #92400e; }
+        .status-blocked { background: #fee2e2; color: #991b1b; }
+        
+        /* Readiness Factors with Ownership */
+        .readiness-factors { margin-top: 16px; }
+        .factor-item { display: flex; justify-content: space-between; align-items: center; padding: 8px 0; border-bottom: 1px solid var(--gray-100); }
+        .factor-left { display: flex; align-items: center; gap: 8px; }
+        .factor-name { font-size: 14px; color: var(--gray-700); }
+        .factor-owner { font-size: 11px; color: var(--gray-500); background: var(--gray-100); padding: 2px 6px; border-radius: 4px; }
+        .factor-due { font-size: 11px; color: var(--gray-500); }
+        .factor-status { font-size: 12px; font-weight: 500; padding: 4px 10px; border-radius: 4px; min-width: 80px; text-align: center; }
+        .status-complete { background: #d1fae5; color: #065f46; }
+        .status-pending { background: #fef3c7; color: #92400e; }
+        .status-overdue { background: #fee2e2; color: #991b1b; }
+        
+        /* Mobile */
+        @media (max-width: 1024px) {
+            .stats-grid { grid-template-columns: repeat(2, 1fr); }
+            .job-cards { grid-template-columns: 1fr; }
+        }
+        
+        @media (max-width: 768px) {
+            .stats-grid { grid-template-columns: 1fr; }
+            .container { padding: 16px; }
+            .header { flex-direction: column; align-items: flex-start; gap: 16px; }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- Header -->
+        <div class="header">
+            <div class="header-left">
+                <h1>🏠 RoofReady Operations</h1>
+                <div class="header-subtitle">Premium Roofing Co. • Dashboard</div>
+            </div>
+            <div class="user-info">
+                <div class="user-avatar">JS</div>
+                <div>
+                    <div style="font-weight: 600;">John Smith</div>
+                    <div style="font-size: 12px; color: var(--gray-600);">Owner • Admin</div>
+                    <div style="margin-top: 4px;">
+                        <span class="plan-badge">Pro Plan • 8/50 jobs</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Stats -->
+        <div class="stats-grid">
+            <div class="stat-card">
+                <div class="stat-value">12 <span style="font-size: 14px; color: var(--gray-500);">/50</span></div>
+                <div class="stat-label">Active Jobs</div>
+                <div style="font-size: 12px; color: var(--success);">↑ 2 this week</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-value">8</div>
+                <div class="stat-label">Ready for Install</div>
+                <div style="font-size: 12px; color: var(--success);">↑ 3 ready</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-value">3</div>
+                <div class="stat-label">At Risk</div>
+                <div style="font-size: 12px; color: var(--danger);">↓ 1 resolved</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-value">1</div>
+                <div class="stat-label">Blocked</div>
+                <div style="font-size: 12px; color: var(--gray-500);">No change</div>
+            </div>
+        </div>
+        
+        <!-- Alerts -->
+        <div class="alerts-section">
+            <div class="alert-header">
+                <span>⚠️</span>
+                <span>Today's Alerts & Reminders</span>
+            </div>
+            <ul class="alert-list">
+                <li class="alert-item alert-critical">
+                    <div>
+                        <strong>Critical: Permit missing</strong>
+                        <div style="font-size: 13px; color: var(--gray-600);">123 Maple St - Due yesterday</div>
+                        <div style="font-size: 12px; color: var(--gray-500); margin-top: 4px;">Assigned to: Office Manager • Due: Yesterday</div>
+                    </div>
+                </li>
+                <li class="alert-item">
+                    <div>
+                        <strong>Customer confirmation needed</strong>
+                        <div style="font-size: 13px; color: var(--gray-600);">456 Oak Ave - Install tomorrow</div>
+                        <div style="font-size: 12px; color: var(--gray-500); margin-top: 4px;">Assigned to: Sales Rep • Due: Today 5 PM</div>
+                    </div>
+                </li>
+                <li class="alert-item">
+                    <div>
+                        <strong>Weather delay possible</strong>
+                        <div style="font-size: 13px; color: var(--gray-600);">30% rain chance for Friday installs</div>
+                        <div style="font-size: 12px; color: var(--gray-500); margin-top: 4px;">Monitor: Crew A, Crew B • Check: Tomorrow AM</div>
+                    </div>
+                </li>
+            </ul>
+        </div>
+        
+        <!-- Job Board -->
+        <div class="job-board">
+            <div class="section-header">
+                <div class="section-title">This Week's Installations</div>
+                <div style="display: flex; gap: 8px;">
+                    <button style="padding: 8px 16px; border: 1px solid var(--gray-300); background: white; border-radius: 6px; font-size: 14px;">Board</button>
+                    <button style="padding: 8px 16px; border: 1px solid var(--gray-300); background: white; border-radius: 6px; font-size: 14px;">Calendar</button>
+                    <button style="padding: 8px 16px; border: 1px solid var(--gray-300); background: white; border-radius: 6px; font-size: 14px;">Filter</button>
+                </div>
+            </div>
+            
+            <div class="job-cards">
+                <!-- Job 1: At Risk -->
+                <div class="job-card">
+                    <div class="job-header">
+                        <div>
+                            <div class="job-address">123 Maple St, Anytown</div>
+                            <div class="job-customer">John & Sarah Miller</div>
+                        </div>
+                        <div class="job-status status-at-risk">At Risk</div>
+                    </div>
+                    
+                    <div style="display: flex; gap: 16px; margin-bottom: 16px; font-size: 13px; color: var(--gray-600);">
+                        <div>📅 Apr 22, 2026</div>
+                        <div>👷 Crew A</div>
+                        <div>⏰ 2 days</div>
+                    </div>
+                    
+                    <div class="readiness-factors">
+                        <div class="factor-item">
+                            <div class="factor-left">
+                                <span>📦</span>
+                                <span class="factor-name">Materials</span>
+                                <span class="factor-owner">Office Manager</span>
+                                <span class="factor-due">Due: Apr 20</span>
+                            </div>
+                            <div class="factor-status status-complete">Complete</div>
+                        </div>
+                        <div class="factor-item">
+                            <div class="factor-left">
+                                <span>👷</span>
+                                <span class="factor-name">Crew</span>
+                                <span class="factor-owner">Field Supervisor</span>
+                                <span class="factor-due">Due: Apr 21</span>
+                            </div>
+                            <div class="factor-status status-complete">Complete</div>
+                        </div>
+                        <div class="factor-item">
+                            <div class="factor-left">
+                                <span>👤</span>
+                                <span class="factor-name">Customer</span>
+                                <span class="factor-owner">Sales Rep</span>
+                                <span class="factor-due">Due: Today</span>
+                            </div>
+                            <div class="factor-status status-pending">Pending</div>
+                        </div>
+                        <div class="factor-item">
+                            <div class="factor-left">
+                                <span>🌧️</span>
+                                <span class="factor-name">Weather</span>
+                                <span class="factor-owner">System</span>
+                                <span class="factor-due">Monitor</span>
+                            </div>
+                            <div class="factor-status status-complete">Clear</div>
+                        </div>
+                        <div class="factor-item">
+                            <div class="factor-left">
+                                <span>📄</span>
+                                <span class="factor-name">Permit</span>
+                                <span class="factor-owner">Office Manager</span>
+                                <span class="factor-due">Overdue</span>
+                            </div>
+                            <div class="factor-status status-overdue">Missing</div>
+                        </div>
+                    </div>
+                    
+                    <div style="margin-top: 16px; padding-top: 16px; border-top: 1px solid var(--gray-200); font-size: 12px; color: var(--gray-500);">
+                        Last updated: Today 9:30 AM by Office Manager
+                    </div>
+                </div>
+                
+                <!-- Job 2: Ready -->
+                <div class="job-card">
+                    <div class="job-header">
+                        <div>
+                            <div class="job-address">456 Oak Ave, Springfield</div>
+                            <div class="job-customer">Robert Johnson</div>
+                        </div>
+                        <div class="job-status status-ready">Ready</div>
+                    </div>
+                    
+                    <div style="display: flex; gap: 16px; margin-bottom: 16px; font-size: 13px; color: var(--gray-600);">
+                        <div>📅 Apr 18, 2026</div>
+                        <div>👷 Crew B</div>
+                        <div>⏰ Tomorrow</div>
+                    </div>
+                    
+                    <div class="readiness-factors">
+                        <div class="factor-item">
+                            <div class="factor-left">
+                                <span>📦</span>
+                                <span class="factor-name">Materials</span>
+                                <span class="factor-owner">Office Manager</span>
+                                <span class="factor-due">Due: Apr 16</span>
+                            </div>
+                            <div class="factor-status status-complete">Complete</div>
+                        </div>
+                        <div class="factor-item">
+                            <div class="factor-left">
+                                <span>👷</span>
+                                <span class="factor-name">Crew</span>
+                                <span class="factor-owner">Field Supervisor</span>
+                                <span class="factor-due">Due: Apr 17</span>
+                            </div>
+                            <div class="factor-status status-complete">Complete</div>
+                        </div>
+                        <div class="factor-item">
+                            <div class="factor-left">
+                                <span>👤</span>
+                                <span class="factor-name">Customer</span>
+                                <span class="factor-owner">Sales Rep</span>
+                                <span class="factor-due">Due: Apr 17</span>
+                            </div>
+                            <div class="factor-status status-complete">Confirmed</div>
+                        </div>
+                        <div class="factor-item">
+                            <div class="factor-left">
+                                <span>🌧️</span>
+                                <span class="factor-name">Weather</span>
+                                <span class="factor-owner">System</span>
+                                <span class="factor-due">Monitor</span>
+                            </div>
+                            <div class="factor-status status-complete">Clear</div>
+                        </div>
+                        <div class="factor-item">
+                            <div class="factor-left">
+                                <span>📄</span>
+                                <span class="factor-name">Permit</span>
+                                <span class="factor-owner">Office Manager</span>
+                                <span class="factor-due">Due: Apr 15</span>
+                            </div>
+                            <div class="factor-status status-complete">Approved</div>
+                        </div>
+                    </div>
+                    
+                    <div style="margin-top: 16px; padding-top: 16px;
