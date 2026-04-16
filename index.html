@@ -465,11 +465,12 @@
                     document.body.removeChild(overlay);
                     
                     // Add the new job to the job board
+                    console.log('Job created successfully:', result.job);
                     addJobToBoard(result.job);
                     
                 } catch (error) {
                     console.error('Error saving job:', error);
-                    alert('Failed to schedule job. Please try again.');
+                    alert(`Failed to schedule job: ${error.message}`);
                     saveBtn.innerHTML = originalText;
                     saveBtn.disabled = false;
                 }
@@ -578,6 +579,8 @@
         
         // Add new job to the job board
         function addJobToBoard(job) {
+            console.log('Adding job to board:', job);
+            
             // Format the install date
             const installDate = new Date(job.install_date);
             const formattedDate = installDate.toLocaleDateString('en-US', { 
@@ -633,17 +636,38 @@
             `;
             
             // Find the job table body and add the new row at the top
+            console.log('Looking for table body...');
             const tableBody = document.querySelector('.job-board tbody');
-            if (tableBody) {
-                // Get all existing data rows (skip the header in thead)
-                const existingRows = tableBody.querySelectorAll('tr');
-                
-                // Insert at the beginning of the table body
-                if (existingRows.length > 0) {
-                    tableBody.insertBefore(newRow, existingRows[0]);
+            
+            if (!tableBody) {
+                console.error('Could not find .job-board tbody');
+                // Try alternative selector
+                const table = document.querySelector('.job-board table');
+                if (table) {
+                    console.log('Found table, creating tbody if needed');
+                    // Create tbody if it doesn't exist
+                    let tbody = table.querySelector('tbody');
+                    if (!tbody) {
+                        tbody = document.createElement('tbody');
+                        table.appendChild(tbody);
+                    }
+                    tbody.appendChild(newRow);
                 } else {
-                    tableBody.appendChild(newRow);
+                    console.error('Could not find .job-board table either');
                 }
+                return;
+            }
+            
+            console.log('Found table body, adding row');
+            // Get all existing data rows (skip the header in thead)
+            const existingRows = tableBody.querySelectorAll('tr');
+            
+            // Insert at the beginning of the table body
+            if (existingRows.length > 0) {
+                tableBody.insertBefore(newRow, existingRows[0]);
+            } else {
+                tableBody.appendChild(newRow);
+            }
                 
                 // Show a subtle visual feedback
                 newRow.style.backgroundColor = '#f0f9ff';
