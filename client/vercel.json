@@ -6,14 +6,14 @@
       "use": "@vercel/static"
     },
     {
-      "src": "dashboard.html",
+      "src": "app.html",
       "use": "@vercel/static"
     }
   ],
   "routes": [
     {
-      "src": "/dashboard.html",
-      "dest": "/dashboard.html"
+      "src": "/app.html",
+      "dest": "/app.html"
     },
     {
       "src": "/(.*)",
