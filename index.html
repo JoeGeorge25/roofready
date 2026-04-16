@@ -81,9 +81,9 @@
                 Know which jobs are ready before install day
             </p>
             <div style="margin-top: 20px;">
-                <a href="#demo-dashboard" style="background: #3b82f6; color: white; padding: 12px 24px; border-radius: 8px; text-decoration: none; font-weight: 600; display: inline-block;">
+                <button id="try-demo-btn" style="background: #3b82f6; color: white; padding: 12px 24px; border-radius: 8px; text-decoration: none; font-weight: 600; display: inline-block; border: none; cursor: pointer; font-size: 16px;">
                     🚀 Try Demo Dashboard
-                </a>
+                </button>
                 <p style="font-size: 14px; color: #6b7280; margin-top: 8px;">See the complete operational platform with job ownership, alerts, and team management</p>
             </div>
         </div>
@@ -158,7 +158,7 @@
             </table>
             
             <div style="margin-top: 20px; text-align: center;">
-                <a href="#demo-dashboard" class="add-button" style="text-decoration: none; color: white;">+ Schedule New Job</a>
+                <button id="schedule-job-btn" class="add-button" style="border: none; cursor: pointer; font-size: 16px;">+ Schedule New Job</button>
             </div>
         </div>
         
@@ -261,5 +261,324 @@
             </div>
         </div>
     </div>
+    
+    <script>
+        // API Configuration
+        const API_BASE = 'https://roofready-fulfillment-production.up.railway.app';
+        
+        // Try Demo Dashboard Button
+        document.getElementById('try-demo-btn').addEventListener('click', async function() {
+            const button = this;
+            const originalText = button.innerHTML;
+            
+            try {
+                // Show loading state
+                button.innerHTML = '⏳ Preparing demo...';
+                button.disabled = true;
+                
+                // Call demo start endpoint
+                const response = await fetch(`${API_BASE}/api/demo/start`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    }
+                });
+                
+                if (!response.ok) {
+                    throw new Error('Failed to start demo');
+                }
+                
+                const data = await response.json();
+                
+                // Store demo session token
+                if (data.token) {
+                    localStorage.setItem('roofready_demo_token', data.token);
+                    localStorage.setItem('roofready_demo_tenant', data.tenantId);
+                }
+                
+                // Redirect to demo dashboard
+                // For now, show demo modal since we don't have full dashboard page
+                // In production: window.location.href = `/demo/dashboard?demo=true&tenant=${data.tenantId}`;
+                
+                // Show demo success modal
+                showDemoSuccessModal(data.tenantId);
+                
+            } catch (error) {
+                console.error('Demo error:', error);
+                button.innerHTML = originalText;
+                button.disabled = false;
+                alert('Unable to start demo. Please try again or contact support.');
+            }
+        });
+        
+        // Schedule New Job Button
+        document.getElementById('schedule-job-btn').addEventListener('click', function() {
+            // Check if user is in demo mode
+            const demoToken = localStorage.getItem('roofready_demo_token');
+            const demoTenant = localStorage.getItem('roofready_demo_tenant');
+            
+            if (demoToken && demoTenant) {
+                // User is in demo mode - open demo job creation
+                openDemoJobModal();
+            } else {
+                // User is not authenticated - redirect to signup
+                alert('Please sign up or try the demo first to schedule jobs.');
+                // Optionally redirect to signup page
+                // window.location.href = '/signup';
+            }
+        });
+        
+        // Demo Job Creation Modal
+        function openDemoJobModal() {
+            // Create modal overlay
+            const overlay = document.createElement('div');
+            overlay.style.cssText = `
+                position: fixed;
+                top: 0;
+                left: 0;
+                right: 0;
+                bottom: 0;
+                background: rgba(0,0,0,0.5);
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                z-index: 1000;
+            `;
+            
+            // Create modal content
+            const modal = document.createElement('div');
+            modal.style.cssText = `
+                background: white;
+                padding: 30px;
+                border-radius: 12px;
+                width: 90%;
+                max-width: 500px;
+                max-height: 90vh;
+                overflow-y: auto;
+            `;
+            
+            modal.innerHTML = `
+                <h2 style="margin-bottom: 20px;">📅 Schedule New Job (Demo)</h2>
+                <p style="color: #6b7280; margin-bottom: 20px;">Create a sample roofing job in demo mode</p>
+                
+                <div style="margin-bottom: 16px;">
+                    <label style="display: block; margin-bottom: 8px; font-weight: 500;">Address</label>
+                    <input type="text" id="job-address" style="width: 100%; padding: 10px; border: 1px solid #e5e7eb; border-radius: 6px;" placeholder="123 Main St, Anytown">
+                </div>
+                
+                <div style="margin-bottom: 16px;">
+                    <label style="display: block; margin-bottom: 8px; font-weight: 500;">Customer Name</label>
+                    <input type="text" id="job-customer" style="width: 100%; padding: 10px; border: 1px solid #e5e7eb; border-radius: 6px;" placeholder="John & Sarah Smith">
+                </div>
+                
+                <div style="margin-bottom: 16px;">
+                    <label style="display: block; margin-bottom: 8px; font-weight: 500;">Install Date</label>
+                    <input type="date" id="job-date" style="width: 100%; padding: 10px; border: 1px solid #e5e7eb; border-radius: 6px;">
+                </div>
+                
+                <div style="margin-bottom: 16px;">
+                    <label style="display: block; margin-bottom: 8px; font-weight: 500;">Crew Assignment</label>
+                    <select id="job-crew" style="width: 100%; padding: 10px; border: 1px solid #e5e7eb; border-radius: 6px;">
+                        <option value="Crew A">Crew A</option>
+                        <option value="Crew B">Crew B</option>
+                        <option value="Crew C">Crew C</option>
+                    </select>
+                </div>
+                
+                <div style="display: flex; gap: 10px; margin-top: 30px;">
+                    <button id="cancel-job-btn" style="flex: 1; padding: 12px; border: 1px solid #e5e7eb; border-radius: 6px; background: white; cursor: pointer;">Cancel</button>
+                    <button id="save-job-btn" style="flex: 1; padding: 12px; border: none; border-radius: 6px; background: #3b82f6; color: white; cursor: pointer; font-weight: 600;">Schedule Job</button>
+                </div>
+            `;
+            
+            // Add to page
+            overlay.appendChild(modal);
+            document.body.appendChild(overlay);
+            
+            // Set default date to tomorrow
+            const tomorrow = new Date();
+            tomorrow.setDate(tomorrow.getDate() + 1);
+            document.getElementById('job-date').valueAsDate = tomorrow;
+            
+            // Event listeners
+            document.getElementById('cancel-job-btn').addEventListener('click', () => {
+                document.body.removeChild(overlay);
+            });
+            
+            document.getElementById('save-job-btn').addEventListener('click', async () => {
+                const address = document.getElementById('job-address').value.trim();
+                const customer = document.getElementById('job-customer').value.trim();
+                const installDate = document.getElementById('job-date').value;
+                const crew = document.getElementById('job-crew').value;
+                
+                if (!address || !customer || !installDate) {
+                    alert('Please fill in all required fields');
+                    return;
+                }
+                
+                const saveBtn = document.getElementById('save-job-btn');
+                const originalText = saveBtn.innerHTML;
+                saveBtn.innerHTML = 'Saving...';
+                saveBtn.disabled = true;
+                
+                try {
+                    // Get demo session info
+                    const demoToken = localStorage.getItem('roofready_demo_token');
+                    const demoTenant = localStorage.getItem('roofready_demo_tenant');
+                    
+                    if (!demoToken || !demoTenant) {
+                        throw new Error('Demo session not found');
+                    }
+                    
+                    // Prepare job data
+                    const jobData = {
+                        address,
+                        customer_name: customer,
+                        install_date: installDate,
+                        crew_assignment: crew,
+                        materials_status: 'pending',
+                        customer_confirmation: 'pending',
+                        weather_status: 'clear',
+                        permit_status: 'pending',
+                        notes: 'Demo job created from marketing site'
+                    };
+                    
+                    // Call demo job creation API
+                    const response = await fetch(`${API_BASE}/api/demo/jobs`, {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json'
+                        },
+                        body: JSON.stringify({
+                            tenantId: demoTenant,
+                            jobData
+                        })
+                    });
+                    
+                    if (!response.ok) {
+                        const errorData = await response.json();
+                        throw new Error(errorData.error || 'Failed to create job');
+                    }
+                    
+                    const result = await response.json();
+                    
+                    // Show success
+                    alert(`✅ Demo job scheduled successfully!\n\n${address}\nCustomer: ${customer}\nInstall: ${installDate}\nCrew: ${crew}`);
+                    
+                    // Close modal
+                    document.body.removeChild(overlay);
+                    
+                    // Note: In a full implementation, we would refresh the dashboard
+                    // window.location.reload();
+                    
+                } catch (error) {
+                    console.error('Error saving job:', error);
+                    alert('Failed to schedule job. Please try again.');
+                    saveBtn.innerHTML = originalText;
+                    saveBtn.disabled = false;
+                }
+            });
+            
+            // Close on overlay click
+            overlay.addEventListener('click', (e) => {
+                if (e.target === overlay) {
+                    document.body.removeChild(overlay);
+                }
+            });
+        }
+        
+        // Demo Success Modal
+        function showDemoSuccessModal(tenantId) {
+            // Create modal overlay
+            const overlay = document.createElement('div');
+            overlay.style.cssText = `
+                position: fixed;
+                top: 0;
+                left: 0;
+                right: 0;
+                bottom: 0;
+                background: rgba(0,0,0,0.5);
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                z-index: 1000;
+            `;
+            
+            // Create modal content
+            const modal = document.createElement('div');
+            modal.style.cssText = `
+                background: white;
+                padding: 30px;
+                border-radius: 12px;
+                width: 90%;
+                max-width: 500px;
+                text-align: center;
+            `;
+            
+            modal.innerHTML = `
+                <div style="font-size: 48px; margin-bottom: 20px;">🎉</div>
+                <h2 style="margin-bottom: 16px;">Demo Ready!</h2>
+                <p style="color: #6b7280; margin-bottom: 20px;">You now have access to the RoofReady demo dashboard with sample roofing jobs.</p>
+                
+                <div style="background: #f9fafb; padding: 20px; border-radius: 8px; margin-bottom: 20px; text-align: left;">
+                    <p style="margin: 0 0 10px 0; font-weight: 500;">Demo Features:</p>
+                    <ul style="margin: 0; padding-left: 20px; color: #6b7280;">
+                        <li>3 sample roofing jobs</li>
+                        <li>Ready/At Risk/Blocked status tracking</li>
+                        <li>Crew assignments</li>
+                        <li>Readiness factor tracking</li>
+                        <li>Demo job scheduling</li>
+                    </ul>
+                </div>
+                
+                <p style="color: #6b7280; font-size: 14px; margin-bottom: 20px;">
+                    <strong>Try it:</strong> Click "Schedule New Job" below to add a demo job.
+                </p>
+                
+                <div style="display: flex; gap: 10px;">
+                    <button id="close-demo-modal" style="flex: 1; padding: 12px; border: 1px solid #e5e7eb; border-radius: 6px; background: white; cursor: pointer;">Close</button>
+                    <button id="go-to-dashboard" style="flex: 1; padding: 12px; border: none; border-radius: 6px; background: #3b82f6; color: white; cursor: pointer; font-weight: 600;">View Dashboard</button>
+                </div>
+            `;
+            
+            // Add to page
+            overlay.appendChild(modal);
+            document.body.appendChild(overlay);
+            
+            // Event listeners
+            document.getElementById('close-demo-modal').addEventListener('click', () => {
+                document.body.removeChild(overlay);
+                // Reset demo button
+                const demoBtn = document.getElementById('try-demo-btn');
+                demoBtn.innerHTML = '🚀 Try Demo Dashboard';
+                demoBtn.disabled = false;
+            });
+            
+            document.getElementById('go-to-dashboard').addEventListener('click', () => {
+                // For now, just close and enable scheduling
+                // In production: window.location.href = `/demo/dashboard?tenant=${tenantId}`;
+                document.body.removeChild(overlay);
+                
+                // Show message about demo access
+                alert('Demo dashboard access enabled! You can now use the "Schedule New Job" button.');
+                
+                // Reset demo button
+                const demoBtn = document.getElementById('try-demo-btn');
+                demoBtn.innerHTML = '🚀 Try Demo Dashboard';
+                demoBtn.disabled = false;
+            });
+            
+            // Close on overlay click
+            overlay.addEventListener('click', (e) => {
+                if (e.target === overlay) {
+                    document.body.removeChild(overlay);
+                    // Reset demo button
+                    const demoBtn = document.getElementById('try-demo-btn');
+                    demoBtn.innerHTML = '🚀 Try Demo Dashboard';
+                    demoBtn.disabled = false;
+                }
+            });
+        }
+    </script>
 </body>
 </html>

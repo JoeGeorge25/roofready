@@ -485,6 +485,259 @@ function getPlanCodeFromPriceId(priceId) {
 }
 
 // ==================================================
+// 7. DEMO SYSTEM ENDPOINTS
+// ==================================================
+
+// Start a demo session
+app.post('/api/demo/start', async (req, res) => {
+  try {
+    console.log('Starting demo session...');
+    
+    // Generate demo tenant ID
+    const demoId = 'demo_' + Date.now() + '_' + Math.random().toString(36).substr(2, 9);
+    const demoEmail = `demo+${demoId}@roofready.com`;
+    
+    // Create demo tenant
+    const { data: tenant, error: tenantError } = await supabase
+      .from('tenants')
+      .insert({
+        id: demoId,
+        name: 'Demo Roofing Company',
+        email: demoEmail,
+        plan_code: 'demo',
+        status: 'active',
+        is_demo: true,
+        demo_expires_at: new Date(Date.now() + 24 * 60 * 60 * 1000) // 24 hours
+      })
+      .select()
+      .single();
+      
+    if (tenantError) {
+      console.error('Error creating demo tenant:', tenantError);
+      // Try to find existing demo tenant
+      const { data: existingTenant } = await supabase
+        .from('tenants')
+        .select('*')
+        .eq('is_demo', true)
+        .order('created_at', { ascending: false })
+        .limit(1)
+        .single();
+        
+      if (existingTenant) {
+        console.log('Using existing demo tenant:', existingTenant.id);
+        await seedDemoData(existingTenant.id);
+        
+        return res.json({
+          success: true,
+          tenantId: existingTenant.id,
+          token: `demo_${existingTenant.id}_${Date.now()}`,
+          message: 'Demo session started'
+        });
+      }
+      
+      return res.status(500).json({ error: 'Failed to create demo session' });
+    }
+    
+    // Seed demo data
+    await seedDemoData(demoId);
+    
+    // Return demo session info
+    res.json({
+      success: true,
+      tenantId: demoId,
+      token: `demo_${demoId}_${Date.now()}`,
+      message: 'Demo session started'
+    });
+    
+  } catch (error) {
+    console.error('Demo start error:', error);
+    res.status(500).json({ error: 'Internal server error' });
+  }
+});
+
+// Seed demo data function
+async function seedDemoData(tenantId) {
+  console.log(`Seeding demo data for tenant: ${tenantId}`);
+  
+  // Create demo users
+  const demoUsers = [
+    { name: 'Office Manager', role: 'office', email: `office+${tenantId}@demo.roofready.com` },
+    { name: 'Field Supervisor', role: 'field', email: `field+${tenantId}@demo.roofready.com` },
+    { name: 'Sales Rep', role: 'sales', email: `sales+${tenantId}@demo.roofready.com` }
+  ];
+  
+  for (const user of demoUsers) {
+    const { error } = await supabase
+      .from('users')
+      .insert({
+        tenant_id: tenantId,
+        name: user.name,
+        email: user.email,
+        role: user.role,
+        is_demo: true
+      });
+      
+    if (error) {
+      console.error(`Error creating demo user ${user.name}:`, error);
+    }
+  }
+  
+  // Create demo jobs
+  const demoJobs = [
+    {
+      address: '123 Maple St, Anytown',
+      customer_name: 'John & Sarah Miller',
+      install_date: new Date(Date.now() + 2 * 24 * 60 * 60 * 1000), // 2 days from now
+      status: 'at_risk',
+      crew_assignment: 'Crew A',
+      materials_status: 'complete',
+      customer_confirmation: 'pending',
+      weather_status: 'clear',
+      permit_status: 'missing',
+      notes: 'Permit application submitted, waiting for approval'
+    },
+    {
+      address: '456 Oak Ave, Springfield',
+      customer_name: 'Robert Johnson',
+      install_date: new Date(Date.now() + 1 * 24 * 60 * 60 * 1000), // 1 day from now
+      status: 'ready',
+      crew_assignment: 'Crew B',
+      materials_status: 'complete',
+      customer_confirmation: 'confirmed',
+      weather_status: 'clear',
+      permit_status: 'approved',
+      notes: 'All systems go for tomorrow'
+    },
+    {
+      address: '789 Pine Rd, Riverside',
+      customer_name: 'Maria Garcia',
+      install_date: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000), // 7 days from now
+      status: 'blocked',
+      crew_assignment: 'Crew C',
+      materials_status: 'delayed',
+      customer_confirmation: 'confirmed',
+      weather_status: 'monitoring',
+      permit_status: 'approved',
+      notes: 'Material shipment delayed by supplier'
+    }
+  ];
+  
+  for (const job of demoJobs) {
+    const { error } = await supabase
+      .from('jobs')
+      .insert({
+        tenant_id: tenantId,
+        ...job,
+        is_demo: true
+      });
+      
+    if (error) {
+      console.error(`Error creating demo job ${job.address}:`, error);
+    }
+  }
+  
+  console.log(`Demo data seeded for tenant: ${tenantId}`);
+}
+
+// Demo dashboard endpoint
+app.get('/api/demo/dashboard/:tenantId', async (req, res) => {
+  try {
+    const { tenantId } = req.params;
+    
+    // Verify this is a demo tenant
+    const { data: tenant } = await supabase
+      .from('tenants')
+      .select('*')
+      .eq('id', tenantId)
+      .eq('is_demo', true)
+      .single();
+      
+    if (!tenant) {
+      return res.status(404).json({ error: 'Demo tenant not found' });
+    }
+    
+    // Get demo jobs
+    const { data: jobs } = await supabase
+      .from('jobs')
+      .select('*')
+      .eq('tenant_id', tenantId)
+      .eq('is_demo', true)
+      .order('install_date', { ascending: true });
+    
+    // Get demo users
+    const { data: users } = await supabase
+      .from('users')
+      .select('*')
+      .eq('tenant_id', tenantId)
+      .eq('is_demo', true);
+    
+    res.json({
+      success: true,
+      tenant,
+      jobs: jobs || [],
+      users: users || [],
+      stats: {
+        totalJobs: jobs?.length || 0,
+        readyJobs: jobs?.filter(j => j.status === 'ready').length || 0,
+        atRiskJobs: jobs?.filter(j => j.status === 'at_risk').length || 0,
+        blockedJobs: jobs?.filter(j => j.status === 'blocked').length || 0
+      }
+    });
+    
+  } catch (error) {
+    console.error('Demo dashboard error:', error);
+    res.status(500).json({ error: 'Internal server error' });
+  }
+});
+
+// Create demo job endpoint
+app.post('/api/demo/jobs', async (req, res) => {
+  try {
+    const { tenantId, jobData } = req.body;
+    
+    // Verify demo tenant
+    const { data: tenant } = await supabase
+      .from('tenants')
+      .select('*')
+      .eq('id', tenantId)
+      .eq('is_demo', true)
+      .single();
+      
+    if (!tenant) {
+      return res.status(404).json({ error: 'Demo tenant not found' });
+    }
+    
+    // Create demo job
+    const { data: job, error } = await supabase
+      .from('jobs')
+      .insert({
+        tenant_id: tenantId,
+        ...jobData,
+        is_demo: true,
+        status: 'at_risk', // Default status for new demo jobs
+        created_at: new Date()
+      })
+      .select()
+      .single();
+      
+    if (error) {
+      console.error('Error creating demo job:', error);
+      return res.status(500).json({ error: 'Failed to create demo job' });
+    }
+    
+    res.json({
+      success: true,
+      job,
+      message: 'Demo job created successfully'
+    });
+    
+  } catch (error) {
+    console.error('Create demo job error:', error);
+    res.status(500).json({ error: 'Internal server error' });
+  }
+});
+
+// ==================================================
 // 8. SERVER STARTUP
 // ==================================================
 const PORT = process.env.PORT || 3002;
