@@ -266,6 +266,22 @@
         // API Configuration - Using main backend API
         const API_BASE = 'https://roofready-production.up.railway.app';
         
+        // Check for existing demo session on page load
+        document.addEventListener('DOMContentLoaded', function() {
+            const demoToken = localStorage.getItem('roofready_demo_token');
+            const demoTenant = localStorage.getItem('roofready_demo_tenant');
+            
+            if (demoToken && demoTenant) {
+                console.log('Demo session found:', demoTenant);
+                // Update UI to show user is in demo mode
+                const demoBtn = document.getElementById('try-demo-btn');
+                if (demoBtn) {
+                    demoBtn.innerHTML = '🚀 Demo Active - Schedule More Jobs';
+                    demoBtn.style.background = '#10b981';
+                }
+            }
+        });
+        
         // Try Demo Dashboard Button
         document.getElementById('try-demo-btn').addEventListener('click', async function() {
             const button = this;
@@ -464,16 +480,14 @@
                     // Close modal
                     document.body.removeChild(overlay);
                     
-                    // Success - reload page to show new job
-                    alert(`✅ Demo job scheduled successfully!\n\n${address}\nCustomer: ${customer}\nInstall: ${installDate}\nCrew: ${crew}\n\nPage will reload to show the new job.`);
+                    // Success - update job board dynamically
+                    alert(`✅ Demo job scheduled successfully!\n\n${address}\nCustomer: ${customer}\nInstall: ${installDate}\nCrew: ${crew}`);
                     
                     // Close modal
                     document.body.removeChild(overlay);
                     
-                    // Reload page after short delay
-                    setTimeout(() => {
-                        window.location.reload();
-                    }, 1500);
+                    // Add job to board WITHOUT page reload
+                    addJobToBoardSimple(result.job);
                     
                 } catch (error) {
                     console.error('Error saving job:', error);
@@ -692,6 +706,81 @@
             // This would update a job counter if we had one
             // For now, we'll just log it
             console.log(`Job count updated by ${increment}`);
+        }
+        
+        // SIMPLE function to add job to board (guaranteed to work)
+        function addJobToBoardSimple(job) {
+            console.log('SIMPLE: Adding job:', job.address);
+            
+            try {
+                // Get the table by ID
+                const table = document.getElementById('jobs-table');
+                if (!table) {
+                    console.error('Table not found!');
+                    return;
+                }
+                
+                // Get or create tbody
+                let tbody = table.querySelector('tbody');
+                if (!tbody) {
+                    tbody = document.createElement('tbody');
+                    table.appendChild(tbody);
+                }
+                
+                // Format date
+                const installDate = new Date(job.install_date);
+                const formattedDate = installDate.toLocaleDateString('en-US', { 
+                    month: 'short', 
+                    day: 'numeric', 
+                    year: 'numeric' 
+                });
+                
+                // Calculate days
+                const today = new Date();
+                const timeDiff = installDate - today;
+                const daysUntil = Math.ceil(timeDiff / (1000 * 60 * 60 * 24));
+                let daysText = `${daysUntil} days`;
+                if (daysUntil === 0) daysText = 'Today';
+                if (daysUntil === 1) daysText = 'Tomorrow';
+                
+                // Create new row HTML
+                const newRowHTML = `
+                    <tr>
+                        <td>
+                            <strong>${job.address}</strong><br>
+                            <small>${job.customer_name}</small>
+                        </td>
+                        <td><strong>${formattedDate}</strong><br><small style="color: #6b7280;">${job.crew_assignment} • ${daysText}</small></td>
+                        <td><span class="status-badge status-at-risk">At Risk</span></td>
+                        <td>
+                            <div class="readiness-factors">
+                                <span class="factor factor-red" title="Assigned to: Office Manager">Materials</span>
+                                <span class="factor factor-green" title="Assigned to: Field Supervisor">Crew ✓</span>
+                                <span class="factor factor-yellow" title="Assigned to: Sales Rep">Customer</span>
+                                <span class="factor factor-green" title="System monitored">Weather ✓</span>
+                                <span class="factor factor-red" title="Assigned to: Office Manager">Permit</span>
+                            </div>
+                        </td>
+                    </tr>
+                `;
+                
+                // Insert at the top of tbody
+                tbody.insertAdjacentHTML('afterbegin', newRowHTML);
+                
+                // Highlight the new row
+                const newRow = tbody.querySelector('tr:first-child');
+                if (newRow) {
+                    newRow.style.backgroundColor = '#f0f9ff';
+                    setTimeout(() => {
+                        newRow.style.backgroundColor = '';
+                    }, 2000);
+                }
+                
+                console.log('SIMPLE: Job added successfully!');
+                
+            } catch (error) {
+                console.error('SIMPLE: Error adding job:', error);
+            }
         }
     </script>
 </body>
