@@ -2,7 +2,7 @@
 builder = "nixpacks"
 
 [deploy]
-startCommand = "node server.js"
+startCommand = "node server-tier-logic.js"
 healthcheckPath = "/api/health"
 
 [network]
