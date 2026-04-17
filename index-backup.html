@@ -112,11 +112,11 @@
                         <td><span class="status-badge status-at-risk">At Risk</span></td>
                         <td>
                             <div class="readiness-factors">
-                                <span class="factor factor-green" title="State: Complete | Owner: Office Manager | Materials delivered">Materials ✓</span>
-                                <span class="factor factor-green" title="State: Complete | Owner: Field Supervisor | Crew A assigned">Crew ✓</span>
-                                <span class="factor factor-yellow" title="State: Warning | Owner: Sales Rep | Due: Apr 21, 2026 | Awaiting confirmation">Customer</span>
-                                <span class="factor factor-green" title="State: Complete | Owner: System | Clear forecast">Weather ✓</span>
-                                <span class="factor factor-red" title="State: Blocked | Owner: Office Manager | Due: Apr 19, 2026 | Permit under review">Permit</span>
+                                <span class="factor factor-green" title="Assigned to: Office Manager">Materials ✓</span>
+                                <span class="factor factor-green" title="Assigned to: Field Supervisor">Crew ✓</span>
+                                <span class="factor factor-yellow" title="Assigned to: Sales Rep - Due Today">Customer</span>
+                                <span class="factor factor-green" title="System monitored">Weather ✓</span>
+                                <span class="factor factor-red" title="Assigned to: Office Manager - Overdue">Permit</span>
                             </div>
                         </td>
                     </tr>
@@ -129,11 +129,11 @@
                         <td><span class="status-badge status-ready">Ready</span></td>
                         <td>
                             <div class="readiness-factors">
-                                <span class="factor factor-green" title="State: Complete | Owner: Office Manager | Delivered on site">Materials ✓</span>
-                                <span class="factor factor-green" title="State: Complete | Owner: Field Supervisor | Crew B assigned">Crew ✓</span>
-                                <span class="factor factor-green" title="State: Complete | Owner: Sales Rep | Confirmed via email">Customer ✓</span>
-                                <span class="factor factor-green" title="State: Complete | Owner: System | Clear forecast">Weather ✓</span>
-                                <span class="factor factor-green" title="State: Complete | Owner: Office Manager | Approved">Permit ✓</span>
+                                <span class="factor factor-green" title="Assigned to: Office Manager">Materials ✓</span>
+                                <span class="factor factor-green" title="Assigned to: Field Supervisor">Crew ✓</span>
+                                <span class="factor factor-green" title="Assigned to: Sales Rep">Customer ✓</span>
+                                <span class="factor factor-green" title="System monitored">Weather ✓</span>
+                                <span class="factor factor-green" title="Assigned to: Office Manager">Permit ✓</span>
                             </div>
                         </td>
                     </tr>
@@ -146,11 +146,11 @@
                         <td><span class="status-badge status-blocked">Blocked</span></td>
                         <td>
                             <div class="readiness-factors">
-                                <span class="factor factor-red" title="State: Blocked | Owner: Office Manager | Due: Apr 23, 2026 | Delayed shipment">Materials</span>
-                                <span class="factor factor-green" title="State: Complete | Owner: Field Supervisor | Crew C assigned">Crew ✓</span>
-                                <span class="factor factor-green" title="State: Complete | Owner: Sales Rep | Confirmed">Customer ✓</span>
-                                <span class="factor factor-yellow" title="State: Warning | Owner: System | Due: Apr 25, 2026 | 30% rain chance">Weather</span>
-                                <span class="factor factor-green" title="State: Complete | Owner: Office Manager | Approved">Permit ✓</span>
+                                <span class="factor factor-red" title="Assigned to: Office Manager - Delayed shipment">Materials</span>
+                                <span class="factor factor-green" title="Assigned to: Field Supervisor">Crew ✓</span>
+                                <span class="factor factor-green" title="Assigned to: Sales Rep">Customer ✓</span>
+                                <span class="factor factor-yellow" title="30% rain chance - Monitor">Weather</span>
+                                <span class="factor factor-green" title="Assigned to: Office Manager">Permit ✓</span>
                             </div>
                         </td>
                     </tr>
@@ -265,14 +265,6 @@
     <script>
         // API Configuration - Using main backend API
         const API_BASE = 'https://roofready-production.up.railway.app';
-        
-        // Plan information for UI
-        const PLANS = {
-          demo: { name: 'Demo', limit: 5, color: '#6b7280' },
-          starter: { name: 'Starter', limit: 10, color: '#3b82f6' },
-          pro: { name: 'Pro', limit: 50, color: '#8b5cf6' },
-          team: { name: 'Team', limit: 'Unlimited', color: '#10b981' }
-        };
         
         // Try Demo Dashboard Button
         document.getElementById('try-demo-btn').addEventListener('click', async function() {
@@ -447,20 +439,15 @@
                         notes: 'Demo job created from marketing site'
                     };
                     
-                    // Call the new tier logic endpoint
-                    const response = await fetch(`${API_BASE}/api/jobs/create`, {
+                    // Call demo job creation API
+                    const response = await fetch(`${API_BASE}/api/demo/jobs`, {
                         method: 'POST',
                         headers: {
                             'Content-Type': 'application/json'
                         },
                         body: JSON.stringify({
                             tenantId: demoTenant,
-                            mode: 'demo',
-                            address,
-                            customer_name: customer,
-                            install_date: installDate,
-                            crew_assignment: crew,
-                            notes: 'Demo job created from marketing site'
+                            jobData
                         })
                     });
                     
@@ -471,37 +458,19 @@
                     
                     const result = await response.json();
                     
-                    if (!result.success) {
-                        throw new Error(result.error || 'Failed to create job');
-                    }
-                    
-                    // Show success with plan info
-                    const newJob = result.jobs && result.jobs[0];
-                    const usage = result.usage || { activeJobs: 0 };
-                    const plan = result.plan || PLANS.demo;
-                    
-                    let message = `✅ Demo job scheduled successfully!\n\n${address}\nCustomer: ${customer}\nInstall: ${installDate}\nCrew: ${crew}`;
-                    
-                    if (plan.activeJobsLimit) {
-                        message += `\n\n📊 Usage: ${usage.activeJobs}/${plan.activeJobsLimit} jobs`;
-                    }
-                    
-                    alert(message);
+                    // Show success
+                    alert(`✅ Demo job scheduled successfully!\n\n${address}\nCustomer: ${customer}\nInstall: ${installDate}\nCrew: ${crew}`);
                     
                     // Close modal
                     document.body.removeChild(overlay);
                     
                     // Add the new job to the job board
-                    if (newJob) {
-                        addJobToJobBoard(newJob);
-                    } else if (result.job) {
-                        // Fallback for old response format
-                        addJobToJobBoard(result.job);
-                    }
+                    console.log('Job created successfully:', result.job);
+                    addJobToBoard(result.job);
                     
                 } catch (error) {
                     console.error('Error saving job:', error);
-                    alert('Failed to schedule job. Please try again.');
+                    alert(`Failed to schedule job: ${error.message}`);
                     saveBtn.innerHTML = originalText;
                     saveBtn.disabled = false;
                 }
@@ -608,95 +577,114 @@
             });
         }
         
-        // Simple function to add job to job board
-        function addJobToJobBoard(job) {
+        // Add new job to the job board
+        function addJobToBoard(job) {
             console.log('Adding job to board:', job);
             
-            try {
-                // Get the table
-                const table = document.getElementById('jobs-table');
-                if (!table) {
-                    console.error('Table not found');
-                    return;
+            // Format the install date
+            const installDate = new Date(job.install_date);
+            const formattedDate = installDate.toLocaleDateString('en-US', { 
+                month: 'short', 
+                day: 'numeric', 
+                year: 'numeric' 
+            });
+            
+            // Calculate days until install
+            const today = new Date();
+            const timeDiff = installDate - today;
+            const daysUntil = Math.ceil(timeDiff / (1000 * 60 * 60 * 24));
+            let daysText = `${daysUntil} days`;
+            if (daysUntil === 0) daysText = 'Today';
+            if (daysUntil === 1) daysText = 'Tomorrow';
+            
+            // Determine status and styling
+            let statusClass = 'status-at-risk';
+            let statusText = 'At Risk';
+            let statusColor = 'at_risk';
+            
+            // Create readiness factors HTML
+            const factorsHtml = `
+                <div class="readiness-factors">
+                    <span class="factor ${job.materials_status === 'complete' ? 'factor-green' : 'factor-red'}" title="Assigned to: Office Manager">
+                        Materials ${job.materials_status === 'complete' ? '✓' : ''}
+                    </span>
+                    <span class="factor factor-green" title="Assigned to: Field Supervisor">
+                        Crew ✓
+                    </span>
+                    <span class="factor ${job.customer_confirmation === 'confirmed' ? 'factor-green' : 'factor-yellow'}" title="Assigned to: Sales Rep">
+                        Customer ${job.customer_confirmation === 'confirmed' ? '✓' : ''}
+                    </span>
+                    <span class="factor ${job.weather_status === 'clear' ? 'factor-green' : 'factor-yellow'}" title="System monitored">
+                        Weather ${job.weather_status === 'clear' ? '✓' : ''}
+                    </span>
+                    <span class="factor ${job.permit_status === 'approved' ? 'factor-green' : 'factor-red'}" title="Assigned to: Office Manager">
+                        Permit ${job.permit_status === 'approved' ? '✓' : ''}
+                    </span>
+                </div>
+            `;
+            
+            // Create the new job row HTML
+            const newRow = document.createElement('tr');
+            newRow.innerHTML = `
+                <td>
+                    <strong>${job.address}</strong><br>
+                    <small>${job.customer_name}</small>
+                </td>
+                <td><strong>${formattedDate}</strong><br><small style="color: #6b7280;">${job.crew_assignment} • ${daysText}</small></td>
+                <td><span class="status-badge ${statusClass}">${statusText}</span></td>
+                <td>${factorsHtml}</td>
+            `;
+            
+            // Find the job table body and add the new row at the top
+            console.log('Looking for table body...');
+            const tableBody = document.querySelector('.job-board tbody');
+            
+            if (!tableBody) {
+                console.error('Could not find .job-board tbody');
+                // Try alternative selector
+                const table = document.querySelector('.job-board table');
+                if (table) {
+                    console.log('Found table, creating tbody if needed');
+                    // Create tbody if it doesn't exist
+                    let tbody = table.querySelector('tbody');
+                    if (!tbody) {
+                        tbody = document.createElement('tbody');
+                        table.appendChild(tbody);
+                    }
+                    tbody.appendChild(newRow);
+                } else {
+                    console.error('Could not find .job-board table either');
                 }
-                
-                // Get tbody
-                let tbody = table.querySelector('tbody');
-                if (!tbody) {
-                    tbody = document.createElement('tbody');
-                    table.appendChild(tbody);
-                }
-                
-                // Format date
-                const installDate = new Date(job.install_date);
-                const formattedDate = installDate.toLocaleDateString('en-US', { 
-                    month: 'short', 
-                    day: 'numeric', 
-                    year: 'numeric' 
-                });
-                
-                // Calculate days
-                const today = new Date();
-                const timeDiff = installDate - today;
-                const daysUntil = Math.ceil(timeDiff / (1000 * 60 * 60 * 24));
-                let daysText = `${daysUntil} days`;
-                if (daysUntil === 0) daysText = 'Today';
-                if (daysUntil === 1) daysText = 'Tomorrow';
-                
-                // Determine status class based on calculated status
-                let statusClass = 'status-at-risk';
-                let statusText = 'At Risk';
-                
-                if (job.status === 'ready') {
-                    statusClass = 'status-ready';
-                    statusText = 'Ready';
-                } else if (job.status === 'blocked') {
-                    statusClass = 'status-blocked';
-                    statusText = 'Blocked';
-                }
-                
-                // Create readiness factors display (simplified for now)
-                // In production, this would come from the API
-                const factorsHtml = `
-                    <div class="readiness-factors">
-                        <span class="factor factor-yellow" title="State: Warning | Owner: Office Manager | Due: ${formattedDate}">Materials</span>
-                        <span class="factor ${job.crew_assignment ? 'factor-green' : 'factor-red'}" title="State: ${job.crew_assignment ? 'Complete' : 'Blocked'} | Owner: Field Supervisor">Crew ${job.crew_assignment ? '✓' : ''}</span>
-                        <span class="factor factor-yellow" title="State: Warning | Owner: Sales Rep | Due: ${formattedDate}">Customer</span>
-                        <span class="factor factor-green" title="State: Complete | Owner: System | Monitored automatically">Weather ✓</span>
-                        <span class="factor factor-yellow" title="State: Warning | Owner: Office Manager | Due: ${formattedDate}">Permit</span>
-                    </div>
-                `;
-                
-                // Create new row
-                const newRowHTML = `
-                    <tr>
-                        <td>
-                            <strong>${job.address}</strong><br>
-                            <small>${job.customer_name}</small>
-                        </td>
-                        <td><strong>${formattedDate}</strong><br><small style="color: #6b7280;">${job.crew_assignment || 'No crew'} • ${daysText}</small></td>
-                        <td><span class="status-badge ${statusClass}">${statusText}</span></td>
-                        <td>${factorsHtml}</td>
-                    </tr>
-                `;
-                
-                // Insert at top
-                tbody.insertAdjacentHTML('afterbegin', newRowHTML);
-                
-                // Highlight
-                const newRow = tbody.querySelector('tr:first-child');
-                if (newRow) {
-                    newRow.style.backgroundColor = '#f0f9ff';
-                    setTimeout(() => {
-                        newRow.style.backgroundColor = '';
-                    }, 2000);
-                }
-                
-                console.log('Job added to board successfully');
-                
-            } catch (error) {
-                console.error('Error adding job to board:', error);
+                return;
             }
+            
+            console.log('Found table body, adding row');
+            // Get all existing data rows (skip the header in thead)
+            const existingRows = tableBody.querySelectorAll('tr');
+            
+            // Insert at the beginning of the table body
+            if (existingRows.length > 0) {
+                tableBody.insertBefore(newRow, existingRows[0]);
+            } else {
+                tableBody.appendChild(newRow);
+            }
+                
+                // Show a subtle visual feedback
+                newRow.style.backgroundColor = '#f0f9ff';
+                setTimeout(() => {
+                    newRow.style.backgroundColor = '';
+                }, 2000);
+                
+                // Update the job count in the demo success modal if it exists
+                updateDemoJobCount(1);
+            }
+        }
+        
+        // Update demo job count
+        function updateDemoJobCount(increment = 0) {
+            // This would update a job counter if we had one
+            // For now, we'll just log it
+            console.log(`Job count updated by ${increment}`);
         }
     </script>
 </body>

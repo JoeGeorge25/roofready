@@ -4,7 +4,7 @@
   "description": "RoofReady SaaS - Roofing operations platform",
   "main": "server.js",
   "scripts": {
-    "start": "node server.js",
+    "start": "node server-tier-logic.js",
     "dev": "node server.js",
     "test-stripe": "node test-stripe.js",
     "fulfillment": "node fulfillment-service.js",
